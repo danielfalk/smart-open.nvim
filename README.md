@@ -1,11 +1,25 @@
-# telescope-smart-open.nvim
+# smart-open.nvim
 
-A [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) extension designed to provide the best possible suggestions for quickly opening files in Neovim.  telescope-smart-open will improve its suggestions over time, adapting to your usage.
+A [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) extension designed to provide the best possible suggestions for quickly opening files in Neovim.  smart-open will improve its suggestions over time, adapting to your usage.
+
+**Warning** ⚠️  smart-open is **beta** at this time. Contributions welcome.
+
+## Isn't this yet another fuzzy file finding plugin?
+
+In a way, but most other solutions require multiple mappings to search:
+
+* git files
+* open buffers
+* recent files
+
+The goal of smart-open is to give you highly relevant results with as few keystrokes as possible--so much so that only a single mapping is needed for searching everything while still managing to be quick about it.
+
+## How it works
 
 The source of suggestions is a combination of files under the current working directory, and your history.  Ranking takes the following factors into account:
 
-- How well the file path matches the search test 
-- How well the file *name* matches the search test (see notes for file name details)
+- How well the file path matches the search text 
+- How well the file *name* matches the search text (see notes for file name details)
 - Recency of last open
 - Whether the file is the last-edited (that is, alternate buffer)
 - The file is currently open
@@ -13,15 +27,15 @@ The source of suggestions is a combination of files under the current working di
 - "Frecency" - how frequently the file has been opened, with a bias toward recent opens. (See notes on frecency)
 - Whether the file is anywhere under the current working directory.  This is especially useful if using an extension that cd's to your project's top-level directory.
 
-This ranking algorithm is self-tuning.  Over time, the weights of the factors above will be adjusted based upon your interaction with it.  The tuning process is especially sensitive to selecting a suggestion that is not at the top.  Weights will be adjusted relative to the suggestions that were not selected.
+This ranking algorithm is self-tuning.  Over time, the weights of the factors above will be adjusted based upon your interaction with it.  The tuning process is especially sensitive to selecting a suggestion that is not at the top.  Weights will be adjusted relative to the higher-ranked suggestions that were not selected.
 
 Calculating and tuning all these factors might sound slow, but this is not the case.  Results return quickly and the impact of these calculations are optimized to be negligible.
 
 # Notes
 
-- File names are sometimes intentionally expanded 
+- In certain cases, both the parent directory as well as the filename are treated as the "file name".  This is because for some file structures, the filename itself isn't informative.  For example, if your JavaScript project uses the convention of `directoryName/index.js` throughout, then searching for "index" isn't going to be very useful.  As a result, we treat `index.js` and `init.lua` as special cases, and treat `parentDirectory/filename` as though it were the filename.
 - Search text matching uses the fzy algorithm.  If telescope-fzy-native is installed, it will be used.
-- Determining how close two files' directories are is just a function of how many directories the tow files have in common.  This means that for any pair of files in the same directory, the score is more significant the deeper that directory is.
+- Determining how close two files' directories are is just a function of how many directories the two files have in common.  This means that for any pair of files in the same directory, the score is more significant the deeper that directory is.
 - Frecency controls how long a given file is preserved in history.  While it can be replenished by opening that file, this value otherwise dwindles over time. When the value is fully depleted, the file can be cleared from the history, improving performance and disk usage. Frecency uses an implementation of Mozilla's [Frecency algorithm](https://developer.mozilla.org/en-US/docs/Mozilla/Tech/Places/Frecency_algorithm) (used in [Firefox's address bar](https://support.mozilla.org/en-US/kb/address-bar-autocomplete-firefox)).
 
 # Acknowledgements
@@ -33,16 +47,14 @@ Using an implementation of Mozilla's [Frecency algorithm](https://developer.mozi
 
 As the extension learns your editing habits over time, the sorting of the list is dynamically altered to prioritize the files you're likely to need.
 
-<img src="https://raw.githubusercontent.com/sunjon/images/master/gh_readme_telescope_frecency.png" alt="screenshot" width="800"/>
-
-* _Scores shown in finder for demonstration purposes - disabled by default_
-
-
 ## Requirements
 
+- neovim 0.6+ (required)
+- ripgrep (required)
 - [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) (required)
 - [sqlite.lua](https://github.com/tami5/sqlite.lua) (required)
 - [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons) (optional)
+- [telescope-fzy-native.nvim](https://github.com/nvim-telescope/telescope-fzy-native.nvim) (optional)
 
 Timestamps, scoring weights, and file records are stored in an [SQLite3](https://www.sqlite.org/index.html) database for persistence and speed.
 
