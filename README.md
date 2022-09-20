@@ -4,6 +4,8 @@ A [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) extension d
 
 **Warning** ⚠️  smart-open is **beta** at this time. Contributions welcome.
 
+![Preview](https://i.imgur.com/GShkgXm.gif)
+
 ## Isn't this yet another fuzzy file finding plugin?
 
 In a way, but most other solutions require multiple mappings to search:
