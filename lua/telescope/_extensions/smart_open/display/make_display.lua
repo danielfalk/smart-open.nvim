@@ -19,8 +19,8 @@ local function format_filepath(path, filename, opts)
 
   local found = filename:find("/", 0, true)
   if found then
-    local display, _ = path:gsub("(.+)/([^/]+)/([^/]+)$", " (%1)")
-    return filename .. display
+    local display, count = path:gsub("(.+)/([^/]+)/([^/]+)$", " (%1)")
+    return count > 0 and (filename .. display) or filename
   else
     local display, _ = path:gsub("(.+)/([^/]+)$", "%2 (%1)")
     return display
