@@ -10,7 +10,10 @@ local function normalize_fzy_score(fzy_score)
   return 1 - 1 / (1 + math.exp(-10 * (fzy_score * 10 - 0.65)))
 end
 
-local sorter = extensions.fzy_native and extensions.fzy_native.native_fzy_sorter() or sorters.get_fzy_sorter()
+local ok, sorter = pcall(function () return extensions.fzy_native.native_fzy_sorter() end)
+if not ok then
+  sorter = sorters.get_fzy_sorter()
+end
 
 local function fzy_score(prompt, line, entry)
   return sorter:scoring_function(prompt, line, entry)

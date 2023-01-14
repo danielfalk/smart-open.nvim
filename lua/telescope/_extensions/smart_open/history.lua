@@ -78,7 +78,7 @@ end
 
 function M:setup(db, opts)
   if self.db then
-    error("db_instance already set up")
+    return
   end
 
   self.db = db
@@ -89,7 +89,7 @@ function M:setup(db, opts)
 
   if self.db.is_empty then
     vim.defer_fn(function()
-      self:import_oldfiles()
+      self:batch_import()
     end, 100)
   end
 
