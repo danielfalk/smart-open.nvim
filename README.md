@@ -53,8 +53,9 @@ As the extension learns your editing habits over time, the sorting of the list i
 
 - neovim 0.6+ (required)
 - ripgrep (required)
+- sqlite3 (required)
 - [telescope.nvim](https://github.com/nvim-telescope/telescope.nvim) (required)
-- [sqlite.lua](https://github.com/tami5/sqlite.lua) (required)
+- [sqlite.lua](https://github.com/kkharji/sqlite.lua) (required)
 - [nvim-web-devicons](https://github.com/kyazdani42/nvim-web-devicons) (optional)
 - [telescope-fzy-native.nvim](https://github.com/nvim-telescope/telescope-fzy-native.nvim) (optional)
 
@@ -70,9 +71,33 @@ use {
   config = function()
     require"telescope".load_extension("smart_open")
   end,
-  requires = {"tami5/sqlite.lua"}
+  requires = {"kkharji/sqlite.lua"}
 }
 
+```
+
+### sqlite3 (required)
+
+sqlite3 must be installed locally. (if you are on mac it might be installed already)
+
+#### Windows
+
+[Download precompiled](https://www.sqlite.org/download.html) and set `let g:sqlite_clib_path = path/to/sqlite3.dll` (note: `/`)
+
+#### Linux
+```bash
+sudo pacman -S sqlite # Arch
+sudo apt-get install sqlite3 libsqlite3-dev # Ubuntu
+```
+
+#### Nix (home-manager)
+```nix
+programs.neovim.plugins = [
+    {
+      plugin = pkgs.vimPlugins.sqlite-lua;
+      config = "let g:sqlite_clib_path = '${pkgs.sqlite.out}/lib/libsqlite3.so'";
+    }
+];
 ```
 
 If no database is found when running Neovim with the plugin installed, a new one is created and entries from `shada` `v:oldfiles` are automatically imported.
