@@ -120,11 +120,10 @@ function M:get_all(dir)
   local result = dir and self.db:get_files_in(dir) or self.db:get_files()
   local now = os.time()
 
-  local max_score = 0
+  local max_score = 1
 
   if not result or type(result) == "boolean" then
-    print("No result with path:", self.path)
-    return {}
+    return {}, max_score
   end
 
   for index, item in ipairs(result) do
