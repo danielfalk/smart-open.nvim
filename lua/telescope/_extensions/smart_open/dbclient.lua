@@ -118,15 +118,17 @@ end
 
 function DbClient:save_weights(weights)
   for k, v in pairs(weights) do
-    self.db:eval(
-      [[
+    if v ~= nil then
+      self.db:eval(
+        [[
   INSERT INTO weights (key, value)
   VALUES (:key, :value)
   ON CONFLICT(key) DO
   UPDATE SET value = :value
-    ]],
-      { key = k, value = v }
-    )
+        ]],
+        { key = k, value = v }
+      )
+    end
   end
 end
 

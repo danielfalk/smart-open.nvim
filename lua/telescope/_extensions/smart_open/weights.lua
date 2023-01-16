@@ -52,7 +52,7 @@ end
 local function adjust_weights(original_weights, weights, success_entry, miss_entry, factor)
   -- Un-apply the original weight to get the raw score
   local function get_unweighted(key, original_weight, entry)
-    return entry.scores[key] / original_weight
+    return entry.scores[key] and entry.scores[key] / original_weight
   end
 
   local to_deduct = 0
@@ -63,10 +63,12 @@ local function adjust_weights(original_weights, weights, success_entry, miss_ent
     local hit_weight = get_unweighted(k, v, success_entry)
     local miss_weight = get_unweighted(k, v, miss_entry)
 
-    if miss_weight > hit_weight then
-      to_deduct = to_deduct + (miss_weight - hit_weight)
-    elseif hit_weight > miss_weight then
-      to_add = to_add + (hit_weight - miss_weight)
+    if miss_weight ~= nil and hit_weight ~= nil then
+      if miss_weight > hit_weight then
+        to_deduct = to_deduct + (miss_weight - hit_weight)
+      elseif hit_weight > miss_weight then
+        to_add = to_add + (hit_weight - miss_weight)
+      end
     end
   end
 
@@ -78,10 +80,12 @@ local function adjust_weights(original_weights, weights, success_entry, miss_ent
     local hit_weight = get_unweighted(k, v, success_entry)
     local miss_weight = get_unweighted(k, v, miss_entry)
 
-    if miss_weight > hit_weight then
-      weights[k] = math.max(1, weights[k] - ADJUSTMENT_POINTS * factor * ((miss_weight - hit_weight) / to_deduct))
-    elseif hit_weight > miss_weight then
-      weights[k] = weights[k] + ADJUSTMENT_POINTS * factor * ((hit_weight - miss_weight) / to_add)
+    if miss_weight ~= nil and hit_weight ~= nil then
+      if miss_weight > hit_weight then
+        weights[k] = math.max(1, weights[k] - ADJUSTMENT_POINTS * factor * ((miss_weight - hit_weight) / to_deduct))
+      elseif hit_weight > miss_weight then
+        weights[k] = weights[k] + ADJUSTMENT_POINTS * factor * ((hit_weight - miss_weight) / to_add)
+      end
     end
   end
 end
