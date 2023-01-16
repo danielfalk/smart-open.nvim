@@ -55,8 +55,8 @@ return function(opts)
     if opts.show_scores then
       local scores = {
         total = entry.relevance > 0 and entry.relevance or entry.base_score,
-        match = entry.scores.path,
-        fn = entry.scores.virtual_name,
+        match = entry.scores.path_fzy + entry.scores.path_fzf,
+        fn = entry.scores.virtual_name_fzy + entry.scores.virtual_name_fzf,
         frecency = entry.scores.frecency,
         recency = entry.scores.recency,
         open = entry.scores.open,

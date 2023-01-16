@@ -33,6 +33,7 @@ function M.start(opts)
     cwd_only = opts.cwd_only,
     ignore_patterns = config.ignore_patterns,
     max_unindexed = config.max_unindexed,
+    match_algorithm = config.match_algorithm
   })
   opts.get_status_text = finder.get_status_text
 

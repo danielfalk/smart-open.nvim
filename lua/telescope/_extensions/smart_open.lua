@@ -46,6 +46,7 @@ return telescope.register_extension({
     set_config("disable_devicons", ext_config.disable_devicons)
     set_config("ignore_patterns", ext_config.ignore_patterns)
     set_config("max_unindexed", ext_config.max_unindexed)
+    set_config("match_algorithm", ext_config.match_algorithm)
 
     config.db_filename = vim.fn.stdpath("data") .. "/smart_open.sqlite3"
 

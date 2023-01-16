@@ -1,5 +1,5 @@
 local file_scanner = require("telescope._extensions.smart_open.file_scanner")
-local set_relevance = require("telescope._extensions.smart_open.finder.set_relevance")
+local configure_set_relevance = require("telescope._extensions.smart_open.finder.set_relevance")
 
 --- Creates a finder that combines entries from our smart_open db and
 --- output from ripgrep
@@ -10,10 +10,12 @@ local set_relevance = require("telescope._extensions.smart_open.finder.set_relev
 --- * cwd_only boolean If true, only returns results under cwd
 --- * ignore_patterns table
 --- * max_unindexed number
+--- * match_algorithm string 'fzy' (default) or 'fzf'
 return function(history, opts)
   local results = {}
   local is_added = {}
   local unindexed_count = 0
+  local set_relevance = configure_set_relevance(opts.match_algorithm)
 
   local history_result, max_score = history:get_all(opts.cwd_only and opts.cwd)
 

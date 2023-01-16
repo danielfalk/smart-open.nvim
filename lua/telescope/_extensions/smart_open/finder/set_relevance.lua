@@ -1,36 +1,34 @@
-local extensions = require("telescope").extensions
-local sorters = require("telescope.sorters")
 local weights = require("telescope._extensions.smart_open.weights").default_weights
 
-local function normalize_fzy_score(fzy_score)
-  -- A negative score means no match
-  if fzy_score < 0 then
-    return 0
+
+--- Configure set_relevance function with a matching_algorithm
+---@param matching_algorithm string: fzf or fzy
+return function(matching_algorithm)
+  matching_algorithm = matching_algorithm or "fzy"
+  assert(matching_algorithm == "fzy" or matching_algorithm == "fzf", "Matching algorigthm must be fzf or fzy")
+
+  local prompt_matcher = require("telescope._extensions.smart_open.finder.prompt_matcher." .. matching_algorithm)
+
+  local update_match_scores = function(prompt, entry)
+    local vn_prop = "virtual_name_" .. matching_algorithm
+    local vn_score = prompt_matcher(prompt, entry.virtual_name, entry)
+    entry.scores[vn_prop] = weights[vn_prop] * vn_score
+
+    local path_prop = "path_" .. matching_algorithm
+    local path_score = prompt_matcher(prompt, entry.path, entry)
+    entry.scores[path_prop] = weights[path_prop] * path_score
+
+    return entry.scores[vn_prop] + entry.scores[path_prop]
   end
-  return 1 - 1 / (1 + math.exp(-10 * (fzy_score * 10 - 0.65)))
-end
 
-local ok, sorter = pcall(function () return extensions.fzy_native.native_fzy_sorter() end)
-if not ok then
-  sorter = sorters.get_fzy_sorter()
-end
+  --- Assign a final relevance to the entry, given the filter text
+  --- additionally, store the prompt-match scores on each entry so weights can be recalculated
+  ---@param prompt string: The filter text
+  ---@param entry table: The entry will be modified in-place
+  return function(prompt, entry)
+    local match_score = update_match_scores(prompt, entry)
 
-local function fzy_score(prompt, line, entry)
-  return sorter:scoring_function(prompt, line, entry)
-end
-
---- Assign a final relevance to the entry, given the filter text
----@param prompt string: The filter text
----@param entry table: The entry will be modified in-place
-return function(prompt, entry)
-  local vn_score = normalize_fzy_score(fzy_score(prompt, entry.virtual_name, entry))
-  entry.scores.virtual_name = weights.virtual_name * vn_score
-
-  local path_score = normalize_fzy_score(fzy_score(prompt, entry.path, entry))
-  entry.scores.path = weights.path * path_score
-
-  local relevance = entry.scores.virtual_name + entry.scores.path
-
-  entry.relevance = entry.base_score + relevance
-  entry.hide = relevance <= 0
+    entry.relevance = entry.base_score + match_score
+    entry.hide = match_score <= 0
+  end
 end

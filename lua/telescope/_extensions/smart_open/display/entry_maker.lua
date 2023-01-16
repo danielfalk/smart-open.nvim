@@ -69,8 +69,10 @@ return function(opts)
       project = 0,
       frecency = 0,
       recency = 0,
-      virtual_name = 0, -- filled in when prompt relevance is calculated
-      path = 0, -- filled in when prompt relevance is calculated
+      virtual_name_fzy = 0, -- filled in when prompt relevance is calculated
+      virtual_name_fzf = 0, -- filled in when prompt relevance is calculated
+      path_fzy = 0, -- filled in when prompt relevance is calculated
+      path_fzf = 0, -- filled in when prompt relevance is calculated
     }
 
     local entry = {
