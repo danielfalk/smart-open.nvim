@@ -64,7 +64,8 @@ function M:record_usage(filepath, force)
   -- check if file is registered as loaded
   if force or not vim.b.telescope_smart_open_registered then
     -- allow [noname] files to go unregistered until BufWritePost
-    if not util.fs_stat(filepath).exists then
+    local stat = util.fs_stat(filepath)
+    if stat.isdirectory or not stat.exists then
       return
     end
     if file_is_ignored(filepath, self.opts.ignore_patterns) then
