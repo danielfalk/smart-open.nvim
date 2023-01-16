@@ -68,6 +68,7 @@ Timestamps, scoring weights, and file records are stored in an [SQLite3](https:/
 ```lua
 use {
   "danielfalk/smart-open.nvim",
+  branch = "0.1.x",
   config = function()
     require"telescope".load_extension("smart_open")
   end,
