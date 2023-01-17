@@ -51,7 +51,14 @@ end
 
 local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
   local stderr = ""
-  local args = { "--files", "--glob-case-insensitive", "--line-buffered", "--ignore-file", basedir .. "/.ff-ignore" }
+  local args = {
+    "--files",
+    "--glob-case-insensitive",
+    "--line-buffered",
+    "--hidden",
+    "--ignore-file",
+    basedir .. "/.ff-ignore",
+  }
 
   for _, value in ipairs(ignore_patterns) do
     table.insert(args, "-g")

@@ -162,6 +162,12 @@ telescope.setup {
 
 ```
 
+### Known Limitations
+
+For files not already in your history, smart-open uses ripgrep for scanning the current directory.  (The command is roughly: `rg --files --glob-case-insensitive --hidden --ignore-file=<cwd>/.ff-ignore -g <ignore_patterns...>`).
+
+As a result, files added to git, _but also ignored by git_, will not be included.  While not common, this is something that git allows. If this becomes a problem you can work around it by either changing your git ignore patterns, editing the file in neovim in some other way, (thereby adding it to the history), or by using ripgrep's `.ignore` file for overriding git.
+
 ### Highlight Groups
 
 ```vim
