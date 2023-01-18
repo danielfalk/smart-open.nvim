@@ -12,7 +12,7 @@ M.default_weights = {
   open = 3,
   alt = 4,
   proximity = 13,
-  project = 5,
+  project = 10,
   frecency = 17,
   recency = 9,
 }

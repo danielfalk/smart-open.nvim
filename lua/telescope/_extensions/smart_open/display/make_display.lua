@@ -3,7 +3,6 @@ local os_home = vim.loop.os_homedir()
 local utils = require("telescope.utils")
 local has_devicons, devicons = pcall(require, "nvim-web-devicons")
 
-
 local function format_filepath(path, filename, opts)
   local original_path = path
 
@@ -41,15 +40,21 @@ local function score_display(scores)
   return interp(fmt, scores)
 end
 
-return function(opts)
-  return function(entry)
+return function(opts) -- make_display
+  return function(entry) -- display
     if not entry.formatted_path then
       local path = format_filepath(entry.path, entry.virtual_name, opts)
       if has_devicons and not opts.disable_devicons then
-        local icon = devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
+        local icon, hl_group = devicons.get_icon(
+          entry.virtual_name,
+          string.match(entry.path, "%a+$"),
+          { default = true }
+        )
         path = icon .. " " .. path
+        entry.formatted_path = { path, { { { 1, 3 }, hl_group } } }
+      else
+        entry.formatted_path = { path }
       end
-      entry.formatted_path = path
     end
 
     if opts.show_scores then
@@ -63,9 +68,15 @@ return function(opts)
         proximity = entry.scores.proximity,
         project = entry.scores.project,
       }
-      return score_display(scores) .. " " .. entry.formatted_path
+
+      if has_devicons and not opts.disable_devicons then
+        local sd = score_display(scores) .. " "
+        return sd .. entry.formatted_path[1], { { { #sd + 1, #sd + 3 }, entry.formatted_path[2][1][2] } }
+      else
+        return score_display(scores) .. " " .. entry.formatted_path[1]
+      end
     end
 
-    return entry.formatted_path
+    return unpack(entry.formatted_path)
   end
 end

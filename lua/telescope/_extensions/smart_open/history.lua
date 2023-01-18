@@ -64,7 +64,8 @@ function M:record_usage(filepath, force)
   -- check if file is registered as loaded
   if force or not vim.b.telescope_smart_open_registered then
     -- allow [noname] files to go unregistered until BufWritePost
-    if not util.fs_stat(filepath).exists then
+    local stat = util.fs_stat(filepath)
+    if stat.isdirectory or not stat.exists then
       return
     end
     if file_is_ignored(filepath, self.opts.ignore_patterns) then
@@ -120,11 +121,10 @@ function M:get_all(dir)
   local result = dir and self.db:get_files_in(dir) or self.db:get_files()
   local now = os.time()
 
-  local max_score = 0
+  local max_score = 1
 
   if not result or type(result) == "boolean" then
-    print("No result with path:", self.path)
-    return {}
+    return {}, max_score
   end
 
   for index, item in ipairs(result) do
