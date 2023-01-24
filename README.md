@@ -86,9 +86,15 @@ sqlite3 must be installed locally. (if you are on mac it might be installed alre
 [Download precompiled](https://www.sqlite.org/download.html) and set `let g:sqlite_clib_path = path/to/sqlite3.dll` (note: `/`)
 
 #### Linux
+
+##### Arch
 ```bash
 sudo pacman -S sqlite # Arch
 sudo apt-get install sqlite3 libsqlite3-dev # Ubuntu
+```
+##### Fedora
+```
+sudo dnf install sqlite sqlite-devel sqlite-tcl
 ```
 
 #### Nix (home-manager)
