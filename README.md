@@ -183,9 +183,7 @@ As a result, files added to git, _but also ignored by git_, will not be included
 ### Highlight Groups
 
 ```vim
-TelescopeBufferLoaded
-TelescopePathSeparator
-TelescopeQueryFilter
+Directory
 ```
 
 

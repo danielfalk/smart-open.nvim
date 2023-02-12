@@ -1,4 +1,4 @@
-local util = require("telescope._extensions.smart_open.util")
+local shallow_copy = require("util.table").shallow_copy
 
 local ADJUSTMENT_POINTS = 0.6 -- Increasing this leads to faster learning, but more drastic behavior swings
 
@@ -99,7 +99,7 @@ end
 ---@param selected table: Entry that the user selected
 ---@returns weights revised weights
 function M.revise_weights(original_weights, results, selected)
-  local new_weights = util.table_shallow_copy(original_weights)
+  local new_weights = shallow_copy(original_weights)
   local greater_misses, lesser_misses = select_misses(results, selected.path)
 
   if #greater_misses + #lesser_misses == 0 then

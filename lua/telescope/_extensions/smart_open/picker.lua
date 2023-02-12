@@ -25,6 +25,7 @@ function M.start(opts)
       return buffers[buf]
     end,
     weights = db:get_weights(weights.default_weights),
+    path_display = opts.path_display,
   })
 
   local finder = Finder(history, {

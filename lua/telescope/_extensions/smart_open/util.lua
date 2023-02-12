@@ -41,16 +41,6 @@ util.fs_stat = function(path)
   return res
 end
 
-function util.table_shallow_copy(t)
-  local t2 = {}
-
-  for k, v in pairs(t) do
-    t2[k] = v
-  end
-
-  return t2
-end
-
 function util.splitlines(str)
   local pos = 0
 
@@ -79,5 +69,13 @@ function util.splitlines(str)
   end
 end
 
+function util.shift_hl(hl_group, offset)
+  local positions = hl_group[1]
+  if positions then
+    positions[1] = positions[1] + offset
+    positions[2] = positions[2] + offset
+  end
+  return hl_group
+end
 
 return util

@@ -1,4 +1,5 @@
 local util = require("telescope._extensions.smart_open.util")
+local shallow_copy = require("util.table").shallow_copy
 local has_sqlite, sqlite = pcall(require, "sqlite")
 
 if not has_sqlite then
@@ -106,7 +107,7 @@ function DbClient:get_files(now)
 end
 
 function DbClient:get_weights(default_weights)
-  local weights = util.table_shallow_copy(default_weights)
+  local weights = shallow_copy(default_weights)
   local result = self.db:eval([[ SELECT key, value from weights ]])
   if result and type(result) ~= "boolean" then
     for _, v in pairs(result) do

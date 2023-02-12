@@ -1,30 +1,6 @@
-local Path = require("plenary.path")
-local os_home = vim.loop.os_homedir()
-local utils = require("telescope.utils")
 local has_devicons, devicons = pcall(require, "nvim-web-devicons")
-
-local function format_filepath(path, filename, opts)
-  local original_path = path
-
-  path = Path:new(path):make_relative(opts.cwd)
-  -- check relative to home/current
-  if vim.startswith(path, os_home) then
-    path = "~/" .. Path:new(path):make_relative(os_home)
-  elseif path ~= original_path then
-    path = path
-  end
-
-  path = utils.transform_path({ path_display = { shorten = 16 } }, path)
-
-  local found = filename:find("/", 0, true)
-  if found then
-    local display, count = path:gsub("(.+)/([^/]+)/([^/]+)$", " (%1)")
-    return count > 0 and (filename .. display) or filename
-  else
-    local display, _ = path:gsub("(.+)/([^/]+)$", "%2 (%1)")
-    return display
-  end
-end
+local format_filepath = require("telescope._extensions.smart_open.display.format_filepath")
+local util = require("telescope._extensions.smart_open.util")
 
 local function interp(s, tab)
   return s:gsub("(%b{})", function(w)
@@ -35,45 +11,71 @@ local function interp(s, tab)
   end)
 end
 
-local function score_display(scores)
+local function score_display(entry)
+  local scores = {
+    total = entry.relevance > 0 and entry.relevance or entry.base_score,
+    match = entry.scores.path_fzy + entry.scores.path_fzf,
+    fn = entry.scores.virtual_name_fzy + entry.scores.virtual_name_fzf,
+    frecency = entry.scores.frecency,
+    recency = entry.scores.recency,
+    open = entry.scores.open,
+    proximity = entry.scores.proximity,
+    project = entry.scores.project,
+  }
+
   local fmt = "{total: 6.1f}:M{match: 6.1f} N{fn: 5.1f} F{frecency: 5.1f} O{open:2.f} P{proximity:2d}/{project:2.f} "
   return interp(fmt, scores)
 end
 
 return function(opts) -- make_display
+  local results_width = nil
+
+  local filename_opts = {
+    cwd = opts.cwd,
+    filename_first = true,
+    shorten_to = 0,
+  }
+
+  local function update_results_width()
+    if results_width then
+      return results_width
+    end
+    local status = require("telescope.state").get_status(vim.api.nvim_get_current_buf())
+    results_width = vim.api.nvim_win_get_width(status.results_win)
+  end
+
   return function(entry) -- display
+    update_results_width()
+
     if not entry.formatted_path then
-      local path = format_filepath(entry.path, entry.virtual_name, opts)
+      local path_room = results_width - 5
+      local path, path_hl = format_filepath(entry.path, entry.virtual_name, filename_opts, path_room)
       if has_devicons and not opts.disable_devicons then
-        local icon, hl_group = devicons.get_icon(
-          entry.virtual_name,
-          string.match(entry.path, "%a+$"),
-          { default = true }
-        )
+        local icon, hl_group =
+          devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
         path = icon .. " " .. path
-        entry.formatted_path = { path, { { { 1, 3 }, hl_group } } }
+        entry.formatted_path = {
+          path,
+          {
+            { { 1, 3 }, hl_group },
+            util.shift_hl(path_hl, 3),
+          },
+        }
       else
         entry.formatted_path = { path }
       end
     end
 
     if opts.show_scores then
-      local scores = {
-        total = entry.relevance > 0 and entry.relevance or entry.base_score,
-        match = entry.scores.path_fzy + entry.scores.path_fzf,
-        fn = entry.scores.virtual_name_fzy + entry.scores.virtual_name_fzf,
-        frecency = entry.scores.frecency,
-        recency = entry.scores.recency,
-        open = entry.scores.open,
-        proximity = entry.scores.proximity,
-        project = entry.scores.project,
-      }
-
       if has_devicons and not opts.disable_devicons then
-        local sd = score_display(scores) .. " "
-        return sd .. entry.formatted_path[1], { { { #sd + 1, #sd + 3 }, entry.formatted_path[2][1][2] } }
+        local sd = score_display(entry) .. " "
+        return sd .. entry.formatted_path[1],
+          {
+            { { #sd + 1, #sd + 3 }, entry.formatted_path[2][1][2] },
+            { { #sd + 4 + #entry.virtual_name, #sd + #entry.formatted_path[1] }, "Directory" },
+          }
       else
-        return score_display(scores) .. " " .. entry.formatted_path[1]
+        return score_display(entry) .. " " .. entry.formatted_path[1]
       end
     end
 
