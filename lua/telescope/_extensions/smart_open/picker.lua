@@ -24,7 +24,7 @@ function M.start(opts)
     buf_is_loaded = function(buf)
       return buffers[buf]
     end,
-    weights = db:get_weights(weights.default_weights)
+    weights = db:get_weights(weights.default_weights),
   })
 
   local finder = Finder(history, {
@@ -33,7 +33,7 @@ function M.start(opts)
     cwd_only = opts.cwd_only,
     ignore_patterns = config.ignore_patterns,
     max_unindexed = config.max_unindexed,
-    match_algorithm = config.match_algorithm
+    match_algorithm = config.match_algorithm,
   })
   opts.get_status_text = finder.get_status_text
 
@@ -45,6 +45,10 @@ function M.start(opts)
     attach_mappings = function()
       actions.select_default:replace(function(prompt_bufnr)
         local selection = action_state.get_selected_entry()
+        if not selection then
+          actions.close(prompt_bufnr)
+          return
+        end
         history:record_usage(selection.path, true)
         local original_weights = db:get_weights(weights.default_weights)
         local revised_weights = weights.revise_weights(original_weights, finder.results, selection)
@@ -62,4 +66,3 @@ function M.start(opts)
   vim.api.nvim_buf_set_option(picker.prompt_bufnr, "filetype", "smart_open")
 end
 return M
-
