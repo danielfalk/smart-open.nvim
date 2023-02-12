@@ -139,10 +139,15 @@ function M:get_all(dir)
   return result, max_score
 end
 
-function M:handle_open(filepath, batch_mode, now)
+function M:handle_open(original_filepath, batch_mode, now)
   now = now or os.time()
 
-  filepath = Path:new(filepath):absolute()
+  local filepath = Path:new(original_filepath):absolute()
+
+  if filepath == "" or not filepath then
+    print("[smart-open] Encountered a blank filepath:", original_filepath)
+    return
+  end
 
   local file = self.db:get_file(filepath, now)
   local new_expiration = find_expiration(file, now)
