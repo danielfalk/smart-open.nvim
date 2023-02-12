@@ -38,6 +38,8 @@ function M.start(opts)
   })
   opts.get_status_text = finder.get_status_text
 
+  local current = vim.api.nvim_buf_get_name(vim.fn.bufnr("%"))
+
   picker = pickers.new(opts, {
     prompt_title = "Search Files By Name",
     on_input_filter_cb = function(query_text)
@@ -50,7 +52,9 @@ function M.start(opts)
           actions.close(prompt_bufnr)
           return
         end
-        history:record_usage(selection.path, true)
+        if current ~= selection.path then
+          history:record_usage(selection.path, true)
+        end
         local original_weights = db:get_weights(weights.default_weights)
         local revised_weights = weights.revise_weights(original_weights, finder.results, selection)
         db:save_weights(revised_weights)

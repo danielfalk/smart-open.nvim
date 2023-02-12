@@ -52,6 +52,11 @@ end
 
 -- Adjust weights based on the various scores
 local function adjust_weights(original_weights, weights, success_entry, miss_entry, factor)
+  -- skip any adjustment if the user is just going back to current
+  if success_entry.current or miss_entry.current then
+    return
+  end
+
   -- Un-apply the original weight to get the raw score
   local function get_unweighted(key, original_weight, entry)
     return entry.scores[key] and entry.scores[key] / original_weight

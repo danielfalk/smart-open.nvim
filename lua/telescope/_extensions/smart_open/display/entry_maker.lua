@@ -58,9 +58,6 @@ return function(opts)
   ---@param max_frecency_score number
   return function(record, max_frecency_score)
     local line = record.path
-    if line == opts.current_buffer then
-      return nil
-    end
 
     local scores = {
       open = 0,
@@ -84,23 +81,26 @@ return function(opts)
       base_score = 0,
       relevance = 0,
       formatted_path = nil,
+      current = line == opts.current_buffer,
     }
 
-    if line == opts.alternate_buffer then
-      scores.alt = weights.alt
-    end
-    if opts.buf_is_loaded(line) then
-      scores.open = weights.open
-    end
+    if not entry.current then
+      if line == opts.alternate_buffer then
+        scores.alt = weights.alt
+      end
+      if opts.buf_is_loaded(line) then
+        scores.open = weights.open
+      end
 
-    scores.frecency = weights.frecency * (record.score / max_frecency_score)
+      scores.frecency = weights.frecency * (record.score / max_frecency_score)
 
-    if record.recent_rank then
-      scores.recency = weights.recency * (8 / (record.recent_rank + 7))
+      if record.recent_rank then
+        scores.recency = weights.recency * (8 / (record.recent_rank + 7))
+      end
+
+      local dir = (opts.current_buffer == "" or opts.current_buffer == nil) and opts.cwd or opts.current_buffer
+      scores.proximity = weights.proximity * normalize_proximity(calculate_proximity(dir, line))
     end
-
-    local dir = (opts.current_buffer == "" or opts.current_buffer == nil) and opts.cwd or opts.current_buffer
-    scores.proximity = weights.proximity * normalize_proximity(calculate_proximity(dir, line))
 
     if line:sub(1, #opts.cwd) == opts.cwd then
       -- Extra points if under the working directory (this is assumed to be a project dir)

@@ -56,7 +56,7 @@ return function(opts) -- make_display
         path = icon .. " " .. path
         entry.formatted_path = {
           path,
-          {
+          entry.current and { { { 1, results_width }, "Comment" } } or {
             { { 1, 3 }, hl_group },
             util.shift_hl(path_hl, 3),
           },
