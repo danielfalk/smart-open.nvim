@@ -111,7 +111,13 @@ function M:batch_import()
   for index, filepath in pairs(oldfiles) do
     -- 9000 works out to about 10 files per day
     local yesterday = os.time() - ((#oldfiles + 1) - index) * 9000
-    self:handle_open(filepath, true, yesterday)
+
+    local ok, err = pcall(function()
+      self:handle_open(filepath, true, yesterday)
+    end)
+    if not ok then
+      print("SmartOpen: Couldn't import", filepath, "Error:", err)
+    end
   end
 
   print(("SmartOpen: Imported %d entries from oldfiles."):format(#oldfiles))
