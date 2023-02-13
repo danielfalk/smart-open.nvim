@@ -1,4 +1,4 @@
-local shallow_copy = require("util.table").shallow_copy
+local shallow_copy = require("smart-open.util.table").shallow_copy
 
 local ADJUSTMENT_POINTS = 0.6 -- Increasing this leads to faster learning, but more drastic behavior swings
 
@@ -88,11 +88,15 @@ local function adjust_weights(original_weights, weights, success_entry, miss_ent
     local miss_weight = get_unweighted(k, v, miss_entry)
 
     if miss_weight ~= nil and hit_weight ~= nil then
+      local new_result = weights[k]
+
       if miss_weight > hit_weight then
-        weights[k] = math.max(1, weights[k] - ADJUSTMENT_POINTS * factor * ((miss_weight - hit_weight) / to_deduct))
+        new_result = math.max(1, weights[k] - ADJUSTMENT_POINTS * factor * ((miss_weight - hit_weight) / to_deduct))
       elseif hit_weight > miss_weight then
-        weights[k] = weights[k] + ADJUSTMENT_POINTS * factor * ((hit_weight - miss_weight) / to_add)
+        new_result = weights[k] + ADJUSTMENT_POINTS * factor * ((hit_weight - miss_weight) / to_add)
       end
+
+      weights[k] = new_result
     end
   end
 end

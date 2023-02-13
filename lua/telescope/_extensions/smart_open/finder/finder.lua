@@ -1,88 +1,100 @@
 local file_scanner = require("telescope._extensions.smart_open.file_scanner")
-local configure_set_relevance = require("telescope._extensions.smart_open.finder.set_relevance")
+local create_entry_data = require("smart-open.entry.create")
+local create_multithread_matcher = require("smart-open.matching.multithread.create")
+local priority_insert = require("smart-open.util.priority_insert")
+local virtual_name = require("smart-open.util.virtual_name")
 
 --- Creates a finder that combines entries from our smart_open db and
 --- output from ripgrep
 ---@param history object: History instance
 ---@param opts table: Finder options...
---- * entry_maker function
+--- * display function
 --- * cwd string
 --- * cwd_only boolean If true, only returns results under cwd
 --- * ignore_patterns table
---- * max_unindexed number
 --- * match_algorithm string 'fzy' (default) or 'fzf'
-return function(history, opts)
+return function(history, opts, context)
   local results = {}
+  local db_results = {}
   local is_added = {}
-  local unindexed_count = 0
-  local set_relevance = configure_set_relevance(opts.match_algorithm)
 
   local history_result, max_score = history:get_all(opts.cwd_only and opts.cwd)
 
-  for i, v in ipairs(history_result) do
-    local entry = opts.entry_maker(v, max_score)
-    if entry and v.exists then
+  local match_runner = create_multithread_matcher(opts.match_algorithm, context)
+
+  for _, v in ipairs(history_result) do
+    if v.exists then
+      local history_data = {
+        frecency = v.score / max_score,
+        recent_rank = v.recent_rank,
+      }
+      local entry_data = create_entry_data(v.path, history_data, context)
+      entry_data.virtual_name = virtual_name.get_virtual_name(v.path)
+
       -- for deduplication
       is_added[v.path] = true
-      entry.index = i
-      table.insert(results, entry)
+
+      table.insert(db_results, entry_data)
+      match_runner.add_entry(entry_data, history_data)
     end
   end
 
-  local total = #results
+  local h = { frecency = 0, recent_rank = 0 }
 
   file_scanner(opts.cwd, opts.ignore_patterns, function(fullpath)
     if not is_added[fullpath] then
-      local entry = opts.entry_maker({ path = fullpath, score = 1, exists = true }, max_score)
-      if not entry then
-        return
-      end
-      entry.index = total + unindexed_count
-      table.insert(results, entry)
-
-      unindexed_count = unindexed_count + 1
-      if unindexed_count > opts.max_unindexed then
-        return false
-      end
+      local entry_data = create_entry_data(fullpath, h, context)
+      match_runner.add_entry(entry_data)
     end
-  end, function() end)
+  end, function()
+    match_runner.entries_complete()
+  end)
 
   return setmetatable({
-    results = results,
     close = function() end,
     get_status_text = function()
-      return tostring(#results)
+      return tostring(#is_added)
     end,
   }, {
+    __index = function(t, k)
+      if k == "results" then
+        return results
+      end
+      return rawget(t, k)
+    end,
     __call = function(_, prompt, process_result, process_complete)
+      results = {}
+
       if prompt == "" then
-        table.sort(results, function(a, b)
-          return a.base_score > b.base_score
-        end)
-      else
-        for _, entry in pairs(results) do
-          set_relevance(prompt, entry)
+        for _, result in pairs(db_results) do
+          priority_insert(results, 50, result, function(x)
+            return x.base_score
+          end)
         end
 
-        table.sort(results, function(a, b)
-          return a.relevance > b.relevance
-        end)
-      end
-
-      local added_count = 0
-
-      for _, v in ipairs(results) do
-        if prompt == "" or not v.hide then
-          v.ordinal = added_count
-          added_count = added_count + 1
-
-          if process_result(v) or added_count == 50 then
+        for _, v in ipairs(results) do
+          if process_result(vim.tbl_extend("keep", { ordinal = v.base_score, display = opts.display }, v)) then
             break
           end
         end
+        if #results >= 20 then
+          process_complete()
+          match_runner.cancel()
+          return
+        end
       end
 
-      process_complete()
+      match_runner.init(
+        prompt,
+        vim.schedule_wrap(function(entry)
+          local to_insert = vim.tbl_extend("keep", { ordinal = entry.relevance, display = opts.display }, entry)
+          priority_insert(results, 50, to_insert, function(e)
+            return e.relevance
+          end)
+          return process_result(to_insert)
+        end),
+        process_complete
+      )
     end,
   })
 end

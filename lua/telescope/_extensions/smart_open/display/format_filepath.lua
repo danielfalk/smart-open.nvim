@@ -1,7 +1,7 @@
 local Path = require("plenary.path")
 local os_home = vim.loop.os_homedir()
 local len = vim.fn.strdisplaywidth
-local table_util = require("util.table")
+local table_util = require("smart-open.util.table")
 local max = table_util.max
 local sum = table_util.sum
 

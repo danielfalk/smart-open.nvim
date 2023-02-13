@@ -1,6 +1,6 @@
 local has_devicons, devicons = pcall(require, "nvim-web-devicons")
 local format_filepath = require("telescope._extensions.smart_open.display.format_filepath")
-local util = require("telescope._extensions.smart_open.util")
+local util = require("smart-open.util")
 
 local function interp(s, tab)
   return s:gsub("(%b{})", function(w)
@@ -13,9 +13,9 @@ end
 
 local function score_display(entry)
   local scores = {
-    total = entry.relevance > 0 and entry.relevance or entry.base_score,
-    match = entry.scores.path_fzy + entry.scores.path_fzf,
-    fn = entry.scores.virtual_name_fzy + entry.scores.virtual_name_fzf,
+    total = (entry.relevance or 0) > 0 and entry.relevance or entry.base_score,
+    match = (entry.scores.path_fzy or 0) + (entry.scores.path_fzf or 0),
+    fn = (entry.scores.virtual_name_fzy or 0) + (entry.scores.virtual_name_fzf or 0),
     frecency = entry.scores.frecency,
     recency = entry.scores.recency,
     open = entry.scores.open,
@@ -23,7 +23,8 @@ local function score_display(entry)
     project = entry.scores.project,
   }
 
-  local fmt = "{total: 6.1f}:M{match: 6.1f} N{fn: 5.1f} F{frecency: 5.1f} O{open:2.f} P{proximity:2d}/{project:2.f} "
+  local fmt = "{total: 6.1f}:M{match: 6.1f} N{fn: 5.1f} F{frecency: 5.1f} "
+    .. "R{recency:4.1f} O{open:2.f} P{proximity:2d}/{project:2.f} "
   return interp(fmt, scores)
 end
 
@@ -45,14 +46,21 @@ return function(opts) -- make_display
   end
 
   return function(entry) -- display
+    --- TODO: remove!!!
+    -- if not entry.path then
+    --   print(vim.inspect(entry))
+    -- end
     update_results_width()
 
     if not entry.formatted_path then
       local path_room = results_width - 5
       local path, path_hl = format_filepath(entry.path, entry.virtual_name, filename_opts, path_room)
       if has_devicons and not opts.disable_devicons then
-        local icon, hl_group =
-          devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
+        local icon, hl_group = devicons.get_icon(
+          entry.virtual_name,
+          string.match(entry.path, "%a+$"),
+          { default = true }
+        )
         path = icon .. " " .. path
         entry.formatted_path = {
           path,

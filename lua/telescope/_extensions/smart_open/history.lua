@@ -1,4 +1,4 @@
-local util = require("telescope._extensions.smart_open.util")
+local util = require("smart-open.util")
 local Path = require("plenary.path")
 
 -- The frequency measure has a decay rate because more recent
@@ -10,7 +10,6 @@ local decay_rate = math.log(2) / HALF_LIFE_DAYS
 local M = {
   db = nil,
   opts = {
-    max_unindexed = 500,
     ignore_patterns = { "*.git/*", "*/tmp/*", "*.pdf" },
   },
 }
@@ -89,8 +88,10 @@ function M:setup(db, opts)
   end
 
   if self.db.is_empty then
+    ---@diagnostic disable-next-line: param-type-mismatch
     vim.defer_fn(function()
       self:batch_import()
+      ---@diagnostic disable-next-line: param-type-mismatch
     end, 100)
   end
 

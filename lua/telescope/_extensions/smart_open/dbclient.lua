@@ -1,9 +1,9 @@
-local util = require("telescope._extensions.smart_open.util")
-local shallow_copy = require("util.table").shallow_copy
+local util = require("smart-open.util")
+local shallow_copy = require("smart-open.util.table").shallow_copy
 local has_sqlite, sqlite = pcall(require, "sqlite")
 
 if not has_sqlite then
-  error("This plugin requires sqlite.lua (https://github.com/tami5/sqlite.lua) " .. tostring(sqlite))
+  error("This plugin requires sqlite.lua (https://github.com/kkharji/sqlite.lua) " .. tostring(sqlite))
 end
 
 local DbClient = {
@@ -59,13 +59,13 @@ function DbClient:update_file(filepath, expiration, now)
 end
 
 function DbClient:delete_expired(now)
-    -- Clean up when opening a file
-    self.db:eval(
-      [[
+  -- Clean up when opening a file
+  self.db:eval(
+    [[
     DELETE FROM files WHERE expiration <= :expiration
       ]],
-      { expiration = now }
-    )
+    { expiration = now }
+  )
 end
 
 function DbClient:get_file(filepath, now)

@@ -11,6 +11,7 @@ local history = require("telescope._extensions.smart_open.history")
 local smart_open = function(opts)
   opts = opts or {}
 
+  ---@diagnostic disable-next-line: missing-parameter
   opts.cwd = vim.fn.expand(opts.cwd or vim.fn.getcwd())
   opts.current_buffer = vim.fn.bufnr("%") > 0 and vim.api.nvim_buf_get_name(vim.fn.bufnr("%")) or ""
   opts.alternate_buffer = vim.fn.bufnr("#") > 0 and vim.api.nvim_buf_get_name(vim.fn.bufnr("#")) or ""
@@ -45,7 +46,6 @@ return telescope.register_extension({
     set_config("show_scores", ext_config.show_scores)
     set_config("disable_devicons", ext_config.disable_devicons)
     set_config("ignore_patterns", ext_config.ignore_patterns)
-    set_config("max_unindexed", ext_config.max_unindexed)
     set_config("match_algorithm", ext_config.match_algorithm)
 
     config.db_filename = vim.fn.stdpath("data") .. "/smart_open.sqlite3"

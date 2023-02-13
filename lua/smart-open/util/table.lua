@@ -34,4 +34,12 @@ function M.max(t)
   end, 0)
 end
 
+function M.subset(t, first, last)
+  local result = {}
+  for i = first, last do
+    table.insert(result, t[i])
+  end
+  return result
+end
+
 return M

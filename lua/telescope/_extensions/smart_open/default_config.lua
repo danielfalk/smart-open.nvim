@@ -58,6 +58,5 @@ return {
     "*.xls",
     "*.pdf",
   },
-  max_unindexed = 6500, -- TODO: if we're setting this here, why set it anywhere else?
   match_algorithm = "fzy",
 }

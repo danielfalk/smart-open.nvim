@@ -1,3 +1,4 @@
+---@diagnostic disable: undefined-global
 local format_filepath = require("telescope._extensions.smart_open.display.format_filepath")
 local os_home = vim.loop.os_homedir()
 
