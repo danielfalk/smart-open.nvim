@@ -1,6 +1,7 @@
 local has_devicons, devicons = pcall(require, "nvim-web-devicons")
 local format_filepath = require("telescope._extensions.smart_open.display.format_filepath")
-local util = require("smart-open.util")
+local sum = require("smart-open.util.table").sum
+local combine_display = require("smart-open.util.combine_display")
 
 local function interp(s, tab)
   return s:gsub("(%b{})", function(w)
@@ -45,48 +46,74 @@ return function(opts) -- make_display
     results_width = vim.api.nvim_win_get_width(status.results_win)
   end
 
-  return function(entry) -- display
-    --- TODO: remove!!!
-    -- if not entry.path then
-    --   print(vim.inspect(entry))
-    -- end
+  local highlight
+  if opts.match_algorithm == "fzf" then
+    local get_fzf_sorter = require("smart-open.matching.algorithms.fzf_implementation")
+    local fzf_sorter = get_fzf_sorter({
+      case_mode = "smart_case",
+      fuzzy = true,
+    })
+    highlight = fzf_sorter
+  else
+    highlight = require("telescope.sorters").get_fzy_sorter(opts)
+  end
+
+  local function format(entry, fit_width)
+    local hl_group = {}
+    local display, path_hl = format_filepath(entry.path, entry.virtual_name, filename_opts, fit_width)
+
+    -- This is the point at which the directory itself starts.  This is because we're putting the virtual_name first.
+    local split_pos = #entry.virtual_name
+
+    local transposed = display:sub(#entry.virtual_name + 2) .. "/" .. entry.virtual_name
+
+    local hl = highlight:highlighter(entry.prompt, transposed)
+
+    if hl then
+      for _, v in ipairs(hl) do
+        local n = v + split_pos + 1
+        if n > #transposed then
+          n = n - (#transposed + 1)
+        end
+        table.insert(hl_group, { { n, n + 1 }, "TelescopeMatching" })
+      end
+    end
+
+    if entry.current then
+      table.insert(hl_group, { { 1, fit_width }, "Comment" })
+    elseif not vim.tbl_isempty(path_hl) then
+      table.insert(hl_group, path_hl)
+    end
+
+    return { display, hl_group = hl_group }
+  end
+
+  local function display(entry)
     update_results_width()
 
-    if not entry.formatted_path then
-      local path_room = results_width - 5
-      local path, path_hl = format_filepath(entry.path, entry.virtual_name, filename_opts, path_room)
-      if has_devicons and not opts.disable_devicons then
-        local icon, hl_group = devicons.get_icon(
-          entry.virtual_name,
-          string.match(entry.path, "%a+$"),
-          { default = true }
-        )
-        path = icon .. " " .. path
-        entry.formatted_path = {
-          path,
-          entry.current and { { { 1, results_width }, "Comment" } } or {
-            { { 1, 3 }, hl_group },
-            util.shift_hl(path_hl, 3),
-          },
-        }
-      else
-        entry.formatted_path = { path }
-      end
-    end
+    local to_display = {}
 
     if opts.show_scores then
-      if has_devicons and not opts.disable_devicons then
-        local sd = score_display(entry) .. " "
-        return sd .. entry.formatted_path[1],
-          {
-            { { #sd + 1, #sd + 3 }, entry.formatted_path[2][1][2] },
-            { { #sd + 4 + #entry.virtual_name, #sd + #entry.formatted_path[1] }, "Directory" },
-          }
-      else
-        return score_display(entry) .. " " .. entry.formatted_path[1]
-      end
+      table.insert(to_display, { score_display(entry) .. " " })
     end
 
-    return unpack(entry.formatted_path)
+    if has_devicons and not opts.disable_devicons then
+      local icon, hl_group = devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
+      table.insert(to_display, { icon .. " ", hl_group = { { { 1, 3 }, hl_group } } })
+    end
+
+    local used = sum(vim.tbl_map(function(d)
+      return vim.fn.strdisplaywidth(d[1])
+    end, to_display))
+
+    local fit_width = results_width - used
+
+    table.insert(to_display, format(entry, fit_width))
+
+    local result = combine_display(to_display)
+
+    return result[1], result.hl_group
   end
+
+  return display
 end

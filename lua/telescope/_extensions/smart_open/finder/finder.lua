@@ -73,7 +73,9 @@ return function(history, opts, context)
         end
 
         for _, v in ipairs(results) do
-          if process_result(vim.tbl_extend("keep", { ordinal = v.base_score, display = opts.display }, v)) then
+          local to_insert =
+            vim.tbl_extend("keep", { ordinal = v.base_score, display = opts.display, prompt = prompt }, v)
+          if process_result(to_insert) then
             break
           end
         end
@@ -87,7 +89,8 @@ return function(history, opts, context)
       match_runner.init(
         prompt,
         vim.schedule_wrap(function(entry)
-          local to_insert = vim.tbl_extend("keep", { ordinal = entry.relevance, display = opts.display }, entry)
+          local to_insert =
+            vim.tbl_extend("keep", { ordinal = entry.relevance, display = opts.display, prompt = prompt }, entry)
           priority_insert(results, 50, to_insert, function(e)
             return e.relevance
           end)

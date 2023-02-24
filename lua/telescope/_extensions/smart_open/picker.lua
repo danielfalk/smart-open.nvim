@@ -1,6 +1,6 @@
 local pickers = require("telescope.pickers")
 local get_buffer_list = require("telescope._extensions.smart_open.buffers")
-local create_sorter = require("smart-open.sorter.create")
+local sorters = require("telescope.sorters")
 local weights = require("telescope._extensions.smart_open.weights")
 local Finder = require("telescope._extensions.smart_open.finder.finder")
 local actions = require("telescope.actions")
@@ -24,7 +24,6 @@ function M.start(opts)
     current_buffer = current,
     ---@diagnostic disable-next-line: param-type-mismatch
     alternate_buffer = vim.fn.bufnr("#") > 0 and vim.api.nvim_buf_get_name(vim.fn.bufnr("#")) or "",
-    show_scores = opts.show_scores,
     open_buffers = get_buffer_list(),
     weights = db:get_weights(weights.default_weights),
     path_display = opts.path_display,
@@ -35,6 +34,7 @@ function M.start(opts)
     cwd = opts.cwd,
     cwd_only = opts.cwd_only,
     ignore_patterns = config.ignore_patterns,
+    show_scores = vim.F.if_nil(opts.show_scores, config.show_scores),
     match_algorithm = opts.match_algorithm or config.match_algorithm,
   }, context)
   opts.get_status_text = finder.get_status_text
@@ -63,27 +63,15 @@ function M.start(opts)
     end,
     finder = finder,
     previewer = telescope_config.file_previewer(opts),
-    sorter = create_sorter(opts.match_algorithm),
-    -- sorter = sorters.highlighter_only(opts),
-    -- sorter = {
-    --   _init = function () end,
-    --   _start = function () end,
-    --   score = function (x) return x.relevance end,
-    --   _finish = function () end,
-    --   _destroy = function () end,
-    -- },
+    sorter = sorters.Sorter:new({
+      -- Just reverse the relevance values for sorting
+      scoring_function = function(_, _, x)
+        return -x
+      end,
+    }),
     tiebreak = function(a, b)
       return #a.path < #b.path
     end,
-    -- sorter = sorters.Sorter:new({
-    --   scoring_function = function(_, _, x)
-    --     return -x
-    --   end,
-
-    --   -- highlighter = function(_, prompt, display)
-    --   --   return fzy.positions(prompt, display)
-    --   -- end,
-    -- }),
   })
   picker:find()
 
