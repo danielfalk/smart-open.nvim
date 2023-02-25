@@ -17,7 +17,7 @@ local function combine_display(display)
       end
     end
 
-    width = width + vim.fn.strdisplaywidth(v[1])
+    width = width + (v.display_width or vim.fn.strdisplaywidth(v[1]))
   end
 
   return { table.concat(full, ""), hl_group = hl_group }

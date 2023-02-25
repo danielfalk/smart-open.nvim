@@ -52,13 +52,20 @@ local function create_entry_data(path, history, context)
     scores = scores,
     base_score = 0,
     current = path == context.current_buffer,
+    modified = false,
   }
 
   if not entry.current then
     if path == context.alternate_buffer then
       scores.alt = weights.alt
     end
-    if context.open_buffers[path] then
+
+    local loaded = context.open_buffers[path]
+    if loaded then
+      if loaded.bufnr then
+        entry.buf = loaded.bufnr
+        entry.modified = loaded.is_modified
+      end
       scores.open = weights.open
     end
 

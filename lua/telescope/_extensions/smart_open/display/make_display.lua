@@ -12,6 +12,22 @@ local function interp(s, tab)
   end)
 end
 
+local function open_buffer_indicators(entry)
+  local prefix = "  "
+  local display_width = 2
+
+  if entry.buf and vim.api.nvim_buf_is_valid(entry.buf) then
+    display_width = 4
+    if entry.scores.alt > 0 then
+      prefix = "• "
+    else
+      prefix = "∘ "
+    end
+  end
+
+  return { prefix, display_width = display_width }
+end
+
 local function score_display(entry)
   local scores = {
     total = (entry.relevance or 0) > 0 and entry.relevance or entry.base_score,
@@ -29,7 +45,7 @@ local function score_display(entry)
   return interp(fmt, scores)
 end
 
-return function(opts) -- make_display
+local function make_display(opts)
   local results_width = nil
 
   local filename_opts = {
@@ -97,6 +113,8 @@ return function(opts) -- make_display
       table.insert(to_display, { score_display(entry) .. " " })
     end
 
+    table.insert(to_display, open_buffer_indicators(entry))
+
     if has_devicons and not opts.disable_devicons then
       local icon, hl_group = devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
       table.insert(to_display, { icon .. " ", hl_group = { { { 1, 3 }, hl_group } } })
@@ -117,3 +135,5 @@ return function(opts) -- make_display
 
   return display
 end
+
+return make_display
