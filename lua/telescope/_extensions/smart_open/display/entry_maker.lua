@@ -96,7 +96,7 @@ return function(opts)
     scores.frecency = weights.frecency * (record.score / max_frecency_score)
 
     if record.recent_rank then
-      scores.recency = weights.recency * (1 / record.recent_rank)
+      scores.recency = weights.recency * (8 / (record.recent_rank + 7))
     end
 
     local dir = (opts.current_buffer == "" or opts.current_buffer == nil) and opts.cwd or opts.current_buffer
