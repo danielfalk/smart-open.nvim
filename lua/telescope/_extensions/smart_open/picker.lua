@@ -63,6 +63,6 @@ function M.start(opts)
   })
   picker:find()
 
-  vim.api.nvim_buf_set_option(picker.prompt_bufnr, "filetype", "smart_open")
+  vim.api.nvim_buf_set_option(picker.prompt_bufnr, "filetype", "TelescopePrompt")
 end
 return M
