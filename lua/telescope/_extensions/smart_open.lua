@@ -5,8 +5,7 @@ end
 
 local DbClient = require("telescope._extensions.smart_open.dbclient")
 local picker = require("telescope._extensions.smart_open.picker")
-local config = require("telescope._extensions.smart_open.default_config")
-local history = require("telescope._extensions.smart_open.history")
+local config = require("smart-open").config
 
 local smart_open = function(opts)
   opts = opts or {}
@@ -22,12 +21,6 @@ local smart_open = function(opts)
   picker.start(opts)
 end
 
-local function set_config(opt_name, value)
-  if value ~= nil then
-    config[opt_name] = value
-  end
-end
-
 local health_ok = vim.fn["health#report_ok"]
 local health_error = vim.fn["health#report_error"]
 
@@ -41,19 +34,7 @@ local function checkhealth()
 end
 
 return telescope.register_extension({
-  setup = function(ext_config)
-    set_config("show_scores", ext_config.show_scores)
-    set_config("disable_devicons", ext_config.disable_devicons)
-    set_config("ignore_patterns", ext_config.ignore_patterns)
-    set_config("max_unindexed", ext_config.max_unindexed)
-    set_config("match_algorithm", ext_config.match_algorithm)
-
-    config.db_filename = vim.fn.stdpath("data") .. "/smart_open.sqlite3"
-
-    local db = DbClient:new({ path = config.db_filename })
-    history:setup(db, config)
-  end,
-
+  setup = require("smart-open").setup,
   exports = {
     smart_open = smart_open,
     health = checkhealth,
