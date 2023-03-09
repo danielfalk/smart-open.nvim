@@ -3,7 +3,7 @@ local process = require("smart-open.matching.multithread.process")
 local create_entry_data = require("smart-open.entry.create")
 local virtual_name = require("smart-open.util.virtual_name")
 
-local function make_prompt_matcher(matching_algorithm, context)
+local function create_matcher(matching_algorithm, context)
   local cancel_token = 0
   local complete = false
   local prompt = nil
@@ -145,4 +145,4 @@ local function make_prompt_matcher(matching_algorithm, context)
   return M
 end
 
-return make_prompt_matcher
+return create_matcher

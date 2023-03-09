@@ -91,9 +91,11 @@ return function(history, opts, context)
         vim.schedule_wrap(function(entry)
           local to_insert =
             vim.tbl_extend("keep", { ordinal = entry.relevance, display = opts.display, prompt = prompt }, entry)
+
           priority_insert(results, 50, to_insert, function(e)
-            return e.relevance
+            return e.relevance or e.base_score
           end)
+
           return process_result(to_insert)
         end),
         process_complete
