@@ -85,6 +85,12 @@ local function make_display(opts)
 
     local hl = highlight:highlighter(entry.prompt, transposed)
 
+    if entry.current then
+      table.insert(hl_group, { { 1, fit_width }, "Comment" })
+    elseif not vim.tbl_isempty(path_hl) then
+      table.insert(hl_group, path_hl)
+    end
+
     if hl then
       for _, v in ipairs(hl) do
         local n = v + split_pos + 1
@@ -93,12 +99,6 @@ local function make_display(opts)
         end
         table.insert(hl_group, { { n, n + 1 }, "TelescopeMatching" })
       end
-    end
-
-    if entry.current then
-      table.insert(hl_group, { { 1, fit_width }, "Comment" })
-    elseif not vim.tbl_isempty(path_hl) then
-      table.insert(hl_group, path_hl)
     end
 
     return { display, hl_group = hl_group }
