@@ -24,3 +24,4 @@ return {
     history:setup(db, config)
   end,
 }
+
