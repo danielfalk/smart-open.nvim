@@ -65,7 +65,7 @@ return function(history, opts, context)
     __call = function(_, prompt, process_result, process_complete)
       results = {}
 
-      if prompt == "" then
+      if prompt == "" and #db_results >= 50 then
         for _, result in pairs(db_results) do
           priority_insert(results, 50, result, function(x)
             return x.base_score
@@ -79,11 +79,9 @@ return function(history, opts, context)
             break
           end
         end
-        if #results >= 20 then
-          process_complete()
-          match_runner.cancel()
-          return
-        end
+
+        process_complete()
+        match_runner.cancel()
       end
 
       match_runner.init(
