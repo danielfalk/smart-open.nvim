@@ -140,7 +140,8 @@ function M:get_all(dir)
       max_score = item.score
     end
     item.max_score = max_score
-    item.exists = util.fs_stat(item.path).exists
+    local stat = util.fs_stat(item.path)
+    item.exists = stat.exists and not stat.isdirectory
   end
 
   return result, max_score
