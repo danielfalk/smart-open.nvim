@@ -117,7 +117,7 @@ local function make_display(opts)
 
     if has_devicons and not opts.disable_devicons then
       local icon, hl_group = devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
-      table.insert(to_display, { icon .. " ", hl_group = { { { 0, #icon + 1 }, hl_group } } })
+      table.insert(to_display, { icon .. " ", hl_group = hl_group and { { { 0, #icon + 1 }, hl_group } } })
     end
 
     local used = sum(vim.tbl_map(function(d)
