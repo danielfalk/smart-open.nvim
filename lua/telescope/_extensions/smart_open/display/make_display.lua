@@ -51,7 +51,7 @@ return function(opts) -- make_display
           { default = true }
         )
         path = icon .. " " .. path
-        entry.formatted_path = { path, { { { 1, 3 }, hl_group } } }
+        entry.formatted_path = { path, { { { 0, #icon + 1 }, hl_group } } }
       else
         entry.formatted_path = { path }
       end
@@ -71,7 +71,7 @@ return function(opts) -- make_display
 
       if has_devicons and not opts.disable_devicons then
         local sd = score_display(scores) .. " "
-        return sd .. entry.formatted_path[1], { { { #sd + 1, #sd + 3 }, entry.formatted_path[2][1][2] } }
+        return sd .. entry.formatted_path[1], { { { #sd, #sd + 4 }, entry.formatted_path[2][1][2] } }
       else
         return score_display(scores) .. " " .. entry.formatted_path[1]
       end
