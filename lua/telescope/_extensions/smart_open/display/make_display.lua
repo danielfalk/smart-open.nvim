@@ -86,7 +86,7 @@ local function make_display(opts)
     local hl = highlight:highlighter(entry.prompt, transposed)
 
     if entry.current then
-      table.insert(hl_group, { { 1, fit_width }, "Comment" })
+      table.insert(hl_group, { { 0, fit_width }, "Comment" })
     elseif not vim.tbl_isempty(path_hl) then
       table.insert(hl_group, path_hl)
     end
@@ -117,7 +117,7 @@ local function make_display(opts)
 
     if has_devicons and not opts.disable_devicons then
       local icon, hl_group = devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
-      table.insert(to_display, { icon .. " ", hl_group = { { { 1, 3 }, hl_group } } })
+      table.insert(to_display, { icon .. " ", hl_group = { { { 0, #icon + 1 }, hl_group } } })
     end
 
     local used = sum(vim.tbl_map(function(d)
