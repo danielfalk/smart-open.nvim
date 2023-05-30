@@ -71,7 +71,7 @@ Put the following in your `lazy.setup(...)`:
 ```lua
 {
   "danielfalk/smart-open.nvim",
-  branch = "0.1.x",
+  branch = "0.2.x",
   dependencies = {
     "kkharji/sqlite.lua",
     -- Only required if using match_algorithm fzf
@@ -86,7 +86,7 @@ Put the following in your `lazy.setup(...)`:
 ```lua
 use {
   "danielfalk/smart-open.nvim",
-  branch = "0.1.x",
+  branch = "0.2.x",
   config = function()
     require"telescope".load_extension("smart_open")
   end,
