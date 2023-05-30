@@ -1,7 +1,7 @@
 local function combine_display(display)
   local full = {}
   local hl_group = {}
-  local width = 0
+  local width = 1
 
   for _, v in ipairs(display) do
     table.insert(full, v[1])

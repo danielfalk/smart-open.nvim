@@ -80,7 +80,7 @@ local function format_filepath(path, filename, opts, maxlen)
 
       result = filename .. spacing .. fit_dir(path, remaining, { shorten_to = 8 })
     end
-    local start_index = len(filename .. spacing) + 1
+    local start_index = len(filename .. spacing)
     hl_group = { { start_index, start_index + len(result) + 1 }, "Directory" }
 
     return result, hl_group

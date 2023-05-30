@@ -25,7 +25,7 @@ local function open_buffer_indicators(entry)
     end
   end
 
-  return { prefix, display_width = display_width }
+  return { prefix, display_width = #prefix + 1 }
 end
 
 local function score_display(entry)
@@ -117,7 +117,7 @@ local function make_display(opts)
 
     if has_devicons and not opts.disable_devicons then
       local icon, hl_group = devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
-      table.insert(to_display, { icon .. " ", hl_group = hl_group and { { { 0, #icon + 1 }, hl_group } } })
+      table.insert(to_display, { icon .. " ", hl_group = hl_group and { { { 0, vim.fn.strdisplaywidth(icon .. " ") }, hl_group } } })
     end
 
     local used = sum(vim.tbl_map(function(d)
