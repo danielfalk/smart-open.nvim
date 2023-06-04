@@ -1,7 +1,7 @@
 local function combine_display(display)
   local full = {}
   local hl_group = {}
-  local width = 1
+  local width = 0
 
   for _, v in ipairs(display) do
     table.insert(full, v[1])
@@ -17,7 +17,7 @@ local function combine_display(display)
       end
     end
 
-    width = width + (v.display_width or vim.fn.strdisplaywidth(v[1]))
+    width = width + #v[1]
   end
 
   return { table.concat(full, ""), hl_group = hl_group }
