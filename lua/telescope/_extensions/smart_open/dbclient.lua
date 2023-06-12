@@ -82,7 +82,7 @@ function DbClient:get_files_in(dir, now)
   local result = self.db:eval(
     [[
   SELECT path, expiration, RANK() OVER ( ORDER BY last_open DESC ) AS recent_rank FROM files
-  WHERE expiration > :now AND instr(path, :dir) > 0
+  WHERE expiration > :now AND instr(path, :dir) == 1
   ORDER BY expiration DESC
     ]],
     { now = now, dir = dir }
