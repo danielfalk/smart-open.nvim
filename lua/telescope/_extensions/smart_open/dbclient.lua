@@ -84,7 +84,7 @@ function DbClient:get_files_in(dir, now)
   WHERE expiration > :now AND instr(path, :dir) == 1
   ORDER BY expiration DESC
     ]],
-    { now = now, dir = dir }
+    { now = now, dir = dir:sub(-1) == "/" and dir or dir .. "/" }
   )
 
   return result
