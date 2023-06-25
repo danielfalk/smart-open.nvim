@@ -73,7 +73,7 @@ Put the following in your `lazy.setup(...)`:
   "danielfalk/smart-open.nvim",
   branch = "0.2.x",
   config = function()
-    require"telescope".load_extension("smart_open")
+    require("telescope").load_extension("smart_open")
   end,
   dependencies = {
     "kkharji/sqlite.lua",
@@ -81,7 +81,8 @@ Put the following in your `lazy.setup(...)`:
     { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
     -- Optional.  If installed, native fzy will be used when match_algorithm is fzy
     { "nvim-telescope/telescope-fzy-native.nvim" },
-},
+  },
+}
 ```
 
 ### [Packer.nvim](https://github.com/wbthomason/packer.nvim)
