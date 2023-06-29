@@ -19,7 +19,8 @@ function M.get_pos(path)
   repeat
     penultimate = last
     last = current
-    current, k = path:find("/", k + 1, true)
+    local path_separator = package.config:sub(1, 1)
+    current, k = path:find(path_separator, k + 1, true)
   until current == nil
 
   return is_index_filename[path:sub(last + 1, path:len())] and penultimate + 1 or last + 1

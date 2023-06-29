@@ -4,7 +4,8 @@ local function calculate_proximity(a, b)
   local previous_index = 1
 
   while true do
-    index = a:find("/", index + 1)
+    local path_separator = package.config:sub(1, 1)
+    index = a:find(path_separator, index + 1)
     if not index then
       break
     elseif index > 1 then
