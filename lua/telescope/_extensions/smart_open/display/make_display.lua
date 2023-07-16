@@ -48,7 +48,7 @@ local function make_display(opts)
 
   local filename_opts = {
     cwd = opts.cwd,
-    filename_first = true,
+    filename_first = opts.filename_first,
     shorten_to = 0,
   }
 

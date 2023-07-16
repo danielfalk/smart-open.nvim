@@ -152,12 +152,20 @@ vim.api.nvim_set_keymap("n", "<leader><leader>", "<Cmd>lua require('telescope').
 Options can be set when opening the picker.  For example:
 
 ```lua
-require('telescope').extensions.smart_open.smart_open({cwd_only = true})
+require('telescope').extensions.smart_open.smart_open {
+  cwd_only = true,
+  filename_first = false,
+}
 ```
 
 - `cwd_only` (default: `false`)
 
   Limit the results to files under the current working directory.  This is normally not needed because if you prefer this pattern of access, then the plugin will pick up on that over time regardless, to the point where files under `cwd` will be recommended above all others.
+
+- `filename_first` (default: `true`)
+
+  Format filename as "filename path/to/parent/directory" if `true` and "path/to/parent/directory/filename" if `false`.
+
 
 ## Configuration
 
