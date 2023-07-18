@@ -79,9 +79,16 @@ local function make_display(opts)
     -- This is the point at which the directory itself starts.  This is because we're putting the virtual_name first.
     local split_pos = #entry.virtual_name
 
-    local transposed = display:sub(#entry.virtual_name + 2) .. "/" .. entry.virtual_name
+    local path
+    if filename_opts.filename_first then
+      -- Transpose order to canonical path order.
+      local spacing = 1
+      path = display:sub(#entry.virtual_name + spacing + 1) .. "/" .. entry.virtual_name
+    else
+      path = display
+    end
 
-    local hl = highlight:highlighter(entry.prompt, transposed)
+    local hl = highlight:highlighter(entry.prompt, path)
 
     if entry.current then
       table.insert(hl_group, { { 0, fit_width }, "Comment" })
@@ -91,9 +98,14 @@ local function make_display(opts)
 
     if hl then
       for _, v in ipairs(hl) do
-        local n = v + split_pos
-        if n > #transposed then
-          n = n - (#transposed + 1)
+        local n
+        if filename_opts.filename_first then
+          n = v + split_pos
+          if n > #path then
+            n = n - (#path + 1)
+          end
+        else
+          n = v - 1
         end
         table.insert(hl_group, { { n, n + 1 }, "TelescopeMatching" })
       end
