@@ -101,7 +101,9 @@ local function format_filepath(path, filename, opts, maxlen)
 
       path = fit_dir(path, remaining, { shorten_to = 0 })
     end
-    path = path .. "/"
+    if path ~= "" then
+      path = path .. "/"
+    end
     hl_group = { { 0, len(path) }, "Directory" }
     return path .. filename, hl_group
   end
