@@ -81,7 +81,7 @@ local function format_filepath(path, filename, opts, maxlen)
       result = filename .. spacing .. fit_dir(path, remaining, { shorten_to = 8 })
     end
     local start_index = len(filename .. spacing)
-    hl_group = { { start_index, start_index + len(result) + 1 }, "Directory" }
+    hl_group = { { start_index, start_index + len(result) }, "Directory" }
 
     return result, hl_group
   else
@@ -101,8 +101,10 @@ local function format_filepath(path, filename, opts, maxlen)
 
       path = fit_dir(path, remaining, { shorten_to = 0 })
     end
-    path = path .. "/"
-    hl_group = { { 0, len(path) + 1 }, "Directory" }
+    if path ~= "" then
+      path = path .. "/"
+    end
+    hl_group = { { 0, len(path) }, "Directory" }
     return path .. filename, hl_group
   end
 end
