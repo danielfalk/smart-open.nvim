@@ -61,7 +61,7 @@ local function make_display(opts)
   end
 
   local highlight
-  if opts.match_algorithm == "fzf" then
+  if opts.config.match_algorithm == "fzf" then
     local get_fzf_sorter = require("smart-open.matching.algorithms.fzf_implementation")
     local fzf_sorter = get_fzf_sorter({
       case_mode = "smart_case",
@@ -119,13 +119,13 @@ local function make_display(opts)
 
     local to_display = {}
 
-    if opts.show_scores then
+    if opts.config.show_scores then
       table.insert(to_display, { score_display(entry) .. " " })
     end
 
     table.insert(to_display, open_buffer_indicators(entry))
 
-    if has_devicons and not opts.disable_devicons then
+    if has_devicons and not opts.config.disable_devicons then
       local icon, hl_group = devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
       table.insert(
         to_display,
