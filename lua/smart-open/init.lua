@@ -18,6 +18,7 @@ return {
     set_config("ignore_patterns", ext_config.ignore_patterns)
     set_config("match_algorithm", ext_config.match_algorithm)
     set_config("cwd_only", ext_config.cwd_only)
+    set_config("space_as_separator", ext_config.space_as_separator)
 
     config.db_filename = vim.fn.stdpath("data") .. "/smart_open.sqlite3"
 
@@ -25,4 +26,3 @@ return {
     history:setup(db, config)
   end,
 }
-

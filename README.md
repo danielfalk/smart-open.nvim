@@ -166,6 +166,10 @@ require('telescope').extensions.smart_open.smart_open {
 
   Format filename as "filename path/to/parent/directory" if `true` and "path/to/parent/directory/filename" if `false`.
 
+- `space_as_separator` (default: `false`)
+
+  Use space to separator file from folder.  Useful to remove de necessity of `/`.
+
 
 ## Configuration
 

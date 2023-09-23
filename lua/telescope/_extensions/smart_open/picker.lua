@@ -42,6 +42,26 @@ function M.start(opts)
   picker = pickers.new(opts, {
     prompt_title = "Search Files By Name",
     on_input_filter_cb = function(query_text)
+      if opts.space_as_separator and opts.filename_first then
+        local first_space_pos = query_text:find(" ")
+
+        if first_space_pos then
+          local before_space = query_text:sub(1, first_space_pos)
+          local after_space = query_text:sub(first_space_pos + 1)
+          query_text = before_space .. after_space:gsub(" ", "/")
+        end
+      elseif opts.space_as_separator then
+        -- Find the position of the last space
+        local last_space_pos = query_text:match(".*()%s")
+
+        -- If a space is found, replace all other spaces with slashes
+        if last_space_pos then
+          local before_last_space = query_text:sub(1, last_space_pos - 1)
+          local after_last_space = query_text:sub(last_space_pos + 1)
+          query_text = "/" .. before_last_space:gsub(" ", "/") .. " " .. after_last_space
+        end
+      end
+
       return { prompt = query_text }
     end,
     attach_mappings = function(_, map)
