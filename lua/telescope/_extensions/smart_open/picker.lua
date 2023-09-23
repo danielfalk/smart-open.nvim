@@ -42,6 +42,10 @@ function M.start(opts)
   picker = pickers.new(opts, {
     prompt_title = "Search Files By Name",
     on_input_filter_cb = function(query_text)
+      if opts.path_separator and opts.path_separator ~= "/" then
+        query_text = string.gsub(query_text, opts.path_separator, "/")
+      end
+
       return { prompt = query_text }
     end,
     attach_mappings = function(_, map)

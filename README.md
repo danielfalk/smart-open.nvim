@@ -166,6 +166,10 @@ require('telescope').extensions.smart_open.smart_open {
 
   Format filename as "filename path/to/parent/directory" if `true` and "path/to/parent/directory/filename" if `false`.
 
+- `path_separator` (default: `/`)
+
+  The separator for file and path.  Is also common to use " " as a value for the separator to search like: `file path`
+
 
 ## Configuration
 
