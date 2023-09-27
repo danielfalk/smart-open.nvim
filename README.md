@@ -144,7 +144,9 @@ If no database is found when running Neovim with the plugin installed, a new one
 ..or to map to a key:
 
 ```lua
-vim.api.nvim_set_keymap("n", "<leader><leader>", "<Cmd>lua require('telescope').extensions.smart_open.smart_open()<CR>", {noremap = true, silent = true})
+vim.keymap.set("n", "<leader><leader>", function ()
+  require("telescope").extensions.smart_open.smart_open()
+end, { noremap = true, silent = true })
 ```
 
 ## Options
