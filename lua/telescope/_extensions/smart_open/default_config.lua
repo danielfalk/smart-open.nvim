@@ -65,8 +65,4 @@ return {
     "*.pdf",
   },
   match_algorithm = "fzy",
-  open_buffer_indicators = {
-    previous = "• ",
-    others = "∘ ",
-  },
 }
