@@ -123,7 +123,10 @@ local function make_display(opts)
       table.insert(to_display, { score_display(entry) .. " " })
     end
 
-    table.insert(to_display, open_buffer_indicators(entry, opts.open_buffer_indicators))
+    table.insert(
+      to_display,
+      open_buffer_indicators(entry, opts.open_buffer_indicators or opts.config.open_buffer_indicators)
+    )
 
     if has_devicons and not opts.disable_devicons then
       local icon, hl_group = devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })

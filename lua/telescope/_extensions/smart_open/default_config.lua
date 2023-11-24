@@ -66,7 +66,7 @@ return {
   },
   match_algorithm = "fzy",
   open_buffer_indicators = {
-    previous = "• ",
-    others = "∘ ",
+    previous = "•",
+    others = "∘",
   },
 }
