@@ -12,14 +12,14 @@ local function interp(s, tab)
   end)
 end
 
-local function open_buffer_indicators(entry)
+local function open_buffer_indicators(entry, buffer_indicators)
   local prefix = "  "
 
   if entry.buf and vim.api.nvim_buf_is_valid(entry.buf) then
     if entry.scores.alt > 0 then
-      prefix = "• "
+      prefix = buffer_indicators.previous .. " "
     else
-      prefix = "∘ "
+      prefix = buffer_indicators.others .. " "
     end
   end
 
@@ -123,17 +123,17 @@ local function make_display(opts)
       table.insert(to_display, { score_display(entry) .. " " })
     end
 
-    table.insert(to_display, open_buffer_indicators(entry))
+    table.insert(
+      to_display,
+      open_buffer_indicators(entry, opts.open_buffer_indicators or opts.config.open_buffer_indicators)
+    )
 
     if has_devicons and not opts.disable_devicons then
       local icon, hl_group = devicons.get_icon(entry.virtual_name, string.match(entry.path, "%a+$"), { default = true })
-      table.insert(
-        to_display,
-        {
-          icon .. " ",
-          hl_group = hl_group and { { { 0, #icon + 1 }, hl_group } },
-        }
-      )
+      table.insert(to_display, {
+        icon .. " ",
+        hl_group = hl_group and { { { 0, #icon + 1 }, hl_group } },
+      })
     end
 
     local used = sum(vim.tbl_map(function(d)
