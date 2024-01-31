@@ -185,7 +185,7 @@ See [default configuration](https://github.com/nvim-telescope/telescope.nvim#tel
 
   The algorithm to use for determining how well each file path matches the typed-in search text.  Options are `fzf` and `fzy`.  Entered text is not the only factor considered in ranking but is typically the most significant.
 
-- `devicons_disabled` (default: `false`)
+- `disable_devicons` (default: `false`)
 
   Disable devicons (if available)
 
@@ -200,7 +200,7 @@ telescope.setup {
       show_scores = false,
       ignore_patterns = {"*.git/*", "*/tmp/*"},
       match_algorithm = "fzy",
-      devicons_disabled = false,
+      disable_devicons = false,
       open_buffer_indicators = {previous = "👀", others = "🙈"},
     },
   },
