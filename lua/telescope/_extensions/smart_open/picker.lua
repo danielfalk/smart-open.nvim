@@ -33,7 +33,7 @@ function M.start(opts)
     display = make_display(opts),
     cwd = opts.cwd,
     cwd_only = vim.F.if_nil(opts.cwd_only, config.cwd_only),
-    ignore_patterns = config.ignore_patterns,
+    ignore_patterns = vim.F.if_nil(opts.ignore_patterns, config.ignore_patterns),
     show_scores = vim.F.if_nil(opts.show_scores, config.show_scores),
     match_algorithm = opts.match_algorithm or config.match_algorithm,
   }, context)
