@@ -19,6 +19,7 @@ return {
     set_config("match_algorithm", ext_config.match_algorithm)
     set_config("cwd_only", ext_config.cwd_only)
     set_config("buffer_indicators", ext_config.buffer_indicators)
+    set_config("mappings", ext_config.mappings)
 
     config.db_filename = vim.fn.stdpath("data") .. "/smart_open.sqlite3"
 

@@ -8,6 +8,7 @@ local action_state = require("telescope.actions.state")
 local telescope_config = require("telescope.config").values
 local history = require("telescope._extensions.smart_open.history")
 local make_display = require("telescope._extensions.smart_open.display.make_display")
+local smart_open_actions = require("smart-open.actions")
 
 local picker
 local M = {}
@@ -18,6 +19,7 @@ function M.start(opts)
 
   ---@diagnostic disable-next-line: param-type-mismatch
   local current = vim.fn.bufnr("%") > 0 and vim.api.nvim_buf_get_name(vim.fn.bufnr("%")) or ""
+  local winid = vim.api.nvim_get_current_win()
 
   local context = {
     cwd = opts.cwd,
@@ -59,25 +61,21 @@ function M.start(opts)
         db:save_weights(revised_weights)
         actions.file_edit(prompt_bufnr)
       end)
-      map("i", "<C-c>", function()
-        local selection = action_state.get_selected_entry()
 
-        if not pcall(function()
-          vim.api.nvim_buf_delete(selection.buf, { force = true })
-        end) then
-          return
+      if config.mappings then
+        for mode, mapping in pairs(config.mappings) do
+          for key, action in pairs(mapping) do
+            map(mode, key, function (prompt_bufnr)
+              action(prompt_bufnr, winid)
+            end)
+          end
         end
+      end
 
-        selection.buf = nil
+      if not config.mappings or not config.mappings.i or not config.mappings.i["<C-w>"] then
+        map("i", "<C-w>", smart_open_actions.delete_buffer)
+      end
 
-        -- Now that the buffer is deleted, refresh the entry to reflect it
-        local original_selection_strategy = picker.selection_strategy
-        picker.selection_strategy = "row"
-        picker:refresh(finder)
-        vim.defer_fn(function()
-          picker.selection_strategy = original_selection_strategy
-        end, 50)
-      end)
       return true
     end,
     finder = finder,
