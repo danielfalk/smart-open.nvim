@@ -28,6 +28,12 @@ return {
     "*.jpeg",
     "*.jpg",
     "*.gif",
+    "*.bmp",
+    "*.avif",
+    "*.heif",
+    "*.jxl",
+    "*.tif",
+    "*.tiff",
     "*.ttf",
     "*.otf",
     "*.woff*",
@@ -58,6 +64,9 @@ return {
     "*.xls",
     "*.pdf",
   },
-  max_unindexed = 6500, -- TODO: if we're setting this here, why set it anywhere else?
   match_algorithm = "fzy",
+  open_buffer_indicators = {
+    previous = "•",
+    others = "∘",
+  },
 }

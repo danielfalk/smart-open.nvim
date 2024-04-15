@@ -1,4 +1,4 @@
-local util = require("telescope._extensions.smart_open.util")
+local splitlines = require("smart-open.util.splitlines")
 
 local function safe_close(handle)
   if not vim.loop.is_closing(handle) then
@@ -14,7 +14,7 @@ local function spawn(cmd, opts, input, onexit)
   local stderr = vim.loop.new_pipe(false)
   local args = vim.tbl_extend("force", opts, { stdio = { nil, stdout, stderr } })
 
-  handle, _ = vim.loop.spawn(cmd, args, function(code, signal)
+  handle = vim.loop.spawn(cmd, args, function(code, signal)
     -- call the exit callback with the code and signal
     onexit(code, signal)
     -- stop reading data to stdout
@@ -67,30 +67,25 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
 
   local done = false
   local stop
-  local leftover
 
+  local start_time
   stop = spawn("rg", { args = args, cwd = basedir }, {
     stdout = function(_, chunk)
+      if not start_time then
+        start_time = vim.loop.uptime()
+      end
+
       if done or not chunk then
         return
       end
 
-      for line, is_complete in util.splitlines(chunk) do
-        if leftover then
-          line = leftover .. line
-        end
-
-        if is_complete then
-          leftover = nil
-          if on_insert(basedir .. "/" .. line) == false then
-            done = true
-            stop()
-            return vim.schedule(function()
-              on_complete(0, "")
-            end)
-          end
-        else
-          leftover = line
+      for line in splitlines(chunk) do
+        if on_insert(basedir .. "/" .. line) == false then
+          done = true
+          stop()
+          return vim.schedule(function()
+            on_complete(0, "")
+          end)
         end
       end
     end,

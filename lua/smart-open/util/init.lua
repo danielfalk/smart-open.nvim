@@ -18,8 +18,6 @@ util.filename_match = function(filename, pattern)
   return filename:find(util.filemask(pattern)) ~= nil
 end
 
---
-
 util.string_isempty = function(str)
   return str == nil or str == ""
 end
@@ -41,43 +39,33 @@ util.fs_stat = function(path)
   return res
 end
 
-function util.table_shallow_copy(t)
-  local t2 = {}
-
-  for k, v in pairs(t) do
-    t2[k] = v
+function util.shift_hl(hl_group, offset)
+  local positions = hl_group[1]
+  if positions then
+    positions[1] = positions[1] + offset
+    positions[2] = positions[2] + offset
   end
-
-  return t2
+  return hl_group
 end
 
-function util.splitlines(str)
-  local pos = 0
-
-  return function()
-    if pos == #str then
-      return nil
-    end
-
-    local result
-    local found = str:find("[\r\n]", pos + 1)
-    if found ~= nil then
-      result = str:sub(pos, found - 1)
-
-      if str:sub(found, found + 1) == "\r\n" then
-        pos = found + 2
-      else
-        pos = found + 1
+-- This is slow, and only useful temporarily in debugging situations as a replacement for vim.mpack.encode
+function util.pack(obj, path)
+  if type(obj) == "table" then
+    for k, v in pairs(obj) do
+      local ok, result = util.pack(v, path and (path .. "." .. k) or k)
+      if not ok then
+        return ok, result
       end
-
-      return result, true
-    else
-      result = str:sub(pos, #str)
-      pos = #str
-      return result, false
     end
   end
-end
 
+  local ok, result = pcall(vim.mpack.encode, obj)
+
+  if not ok then
+    return false, "Path " .. path .. " could not be packed"
+  else
+    return ok, result
+  end
+end
 
 return util

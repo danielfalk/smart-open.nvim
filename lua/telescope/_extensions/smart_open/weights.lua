@@ -1,4 +1,4 @@
-local util = require("telescope._extensions.smart_open.util")
+local shallow_copy = require("smart-open.util.table").shallow_copy
 
 local ADJUSTMENT_POINTS = 0.6 -- Increasing this leads to faster learning, but more drastic behavior swings
 
@@ -52,6 +52,11 @@ end
 
 -- Adjust weights based on the various scores
 local function adjust_weights(original_weights, weights, success_entry, miss_entry, factor)
+  -- skip any adjustment if the user is just going back to current
+  if success_entry.current or miss_entry.current then
+    return
+  end
+
   -- Un-apply the original weight to get the raw score
   local function get_unweighted(key, original_weight, entry)
     return entry.scores[key] and entry.scores[key] / original_weight
@@ -83,11 +88,15 @@ local function adjust_weights(original_weights, weights, success_entry, miss_ent
     local miss_weight = get_unweighted(k, v, miss_entry)
 
     if miss_weight ~= nil and hit_weight ~= nil then
+      local new_result = weights[k]
+
       if miss_weight > hit_weight then
-        weights[k] = math.max(1, weights[k] - ADJUSTMENT_POINTS * factor * ((miss_weight - hit_weight) / to_deduct))
+        new_result = math.max(1, weights[k] - ADJUSTMENT_POINTS * factor * ((miss_weight - hit_weight) / to_deduct))
       elseif hit_weight > miss_weight then
-        weights[k] = weights[k] + ADJUSTMENT_POINTS * factor * ((hit_weight - miss_weight) / to_add)
+        new_result = weights[k] + ADJUSTMENT_POINTS * factor * ((hit_weight - miss_weight) / to_add)
       end
+
+      weights[k] = new_result
     end
   end
 end
@@ -99,7 +108,7 @@ end
 ---@param selected table: Entry that the user selected
 ---@returns weights revised weights
 function M.revise_weights(original_weights, results, selected)
-  local new_weights = util.table_shallow_copy(original_weights)
+  local new_weights = shallow_copy(original_weights)
   local greater_misses, lesser_misses = select_misses(results, selected.path)
 
   if #greater_misses + #lesser_misses == 0 then
