@@ -14,7 +14,7 @@ local function make_delete_buffer_action(close_command)
     local selection = action_state.get_selected_entry()
     local picker = action_state.get_current_picker(prompt_bufnr)
 
-    local removed = close(selection.buf, winid)
+    local removed = close(selection.buf, picker.original_win_id)
 
     if not removed then
       return

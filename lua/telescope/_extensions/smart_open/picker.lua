@@ -19,7 +19,6 @@ function M.start(opts)
 
   ---@diagnostic disable-next-line: param-type-mismatch
   local current = vim.fn.bufnr("%") > 0 and vim.api.nvim_buf_get_name(vim.fn.bufnr("%")) or ""
-  local winid = vim.api.nvim_get_current_win()
 
   local context = {
     cwd = opts.cwd,
@@ -47,32 +46,39 @@ function M.start(opts)
       return { prompt = query_text }
     end,
     attach_mappings = function(_, map)
-      actions.select_default:replace(function(prompt_bufnr)
-        local selection = action_state.get_selected_entry()
-        if not selection then
-          actions.close(prompt_bufnr)
-          return
-        end
-        if current ~= selection.path then
-          history:record_usage(selection.path, true)
-        end
-        local original_weights = db:get_weights(weights.default_weights)
-        local revised_weights = weights.revise_weights(original_weights, finder.results, selection)
-        db:save_weights(revised_weights)
-        actions.file_edit(prompt_bufnr)
-      end)
+      actions.select_default:enhance({
+        pre = function(prompt_bufnr)
+          local selection = action_state.get_selected_entry()
+          if not selection then
+            actions.close(prompt_bufnr)
+            return
+          end
+          if current ~= selection.path then
+            history:record_usage(selection.path, true)
+          end
+          local original_weights = db:get_weights(weights.default_weights)
+          local revised_weights = weights.revise_weights(original_weights, finder.results, selection)
+          db:save_weights(revised_weights)
+        end,
+      })
+
+      local applied_mappings = { n = {}, i = {} }
 
       if config.mappings then
-        for mode, mapping in pairs(config.mappings) do
-          for key, action in pairs(mapping) do
-            map(mode, key, function (prompt_bufnr)
-              action(prompt_bufnr, winid)
-            end)
+        for mode, mode_map in pairs(config.mappings) do
+          mode = string.lower(mode)
+
+          for key_bind, key_func in pairs(mode_map) do
+            local key_bind_internal = vim.api.nvim_replace_termcodes(key_bind, true, true, true)
+
+            applied_mappings[mode][key_bind_internal] = true
+
+            map(mode, key_bind_internal, key_func)
           end
         end
       end
 
-      if not config.mappings or not config.mappings.i or not config.mappings.i["<C-w>"] then
+      if not applied_mappings.i["<C-w>"] then
         map("i", "<C-w>", smart_open_actions.delete_buffer)
       end
 
