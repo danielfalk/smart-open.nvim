@@ -3,7 +3,12 @@ local process = require("smart-open.matching.multithread.process")
 local create_entry_data = require("smart-open.entry.create")
 local virtual_name = require("smart-open.util.virtual_name")
 
-local function create_matcher(matching_algorithm, context)
+---@param opts table: matcher options...
+--- * match_algorithm string
+--- * result_limit number
+---@param context table: context options
+local function create_matcher(opts, context)
+  local matching_algorithm = opts.match_algorithm
   local cancel_token = 0
   local complete = false
   local prompt = nil
@@ -12,7 +17,7 @@ local function create_matcher(matching_algorithm, context)
   local slot_count = 4 -- threadpool thread count
   local last_processed_index = 0
   local top_entries = {} -- treat it as ascending (lowest relevance last)
-  local top_entry_count = 20
+  local top_entry_count = opts.result_limit or 40
   local waiting_threads = 0
   local history_data_cache = {}
 
@@ -24,11 +29,17 @@ local function create_matcher(matching_algorithm, context)
   local native_fzy_path = matching_algorithm ~= "fzf"
     and vim.api.nvim_get_runtime_file("deps/fzy-lua-native/lua/native.lua", false)[1]
 
-  local options = vim.mpack.encode({
+  local opt_table = {
     matching_algorithm = matching_algorithm,
     native_fzy_path = native_fzy_path or nil,
     weights = context.weights,
-  })
+  }
+
+  if opts.result_limit then
+    opt_table.result_limit = opts.result_limit
+  end
+
+  local options = vim.mpack.encode(opt_table)
 
   local function combine_with_main(thread_top_entries)
     for _, entry in ipairs(thread_top_entries) do

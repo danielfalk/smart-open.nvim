@@ -8,6 +8,8 @@ local function process(prompt, cancel_token, encoded_options, encoded_entries)
     assert(options)
     assert(entries)
 
+    result_limit = options.result_limit or result_limit
+
     local results = {}
 
     local set_relevance = require("telescope._extensions.smart_open.finder.set_relevance")(options)

@@ -191,6 +191,10 @@ See [default configuration](https://github.com/nvim-telescope/telescope.nvim#tel
 
 - `open_buffer_indicators` (default: `{previous = "•", others = "∘"}`)
 
+- `result_limit` (default: `40`)
+
+  Limit the number of results returned.  Note that this is kept intentionally low by default for performance.  The main goal of this plugin is to be able to jump to the file you want with very few keystrokes.  Smart open should put relevant results at your fingertips without having to waste time typing too much or scanning through a long list of results.  If you need to scan regardless, go ahead and increase this limit.  However, if better search results would make that unnecessary and there's a chance that smart open could provide them, please [file a bug](https://github.com/danielfalk/smart-open.nvim/issues/new) to help make it better.
+
 ### Example Configuration:
 
 ```

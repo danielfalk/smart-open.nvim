@@ -37,6 +37,7 @@ function M.start(opts)
     ignore_patterns = vim.F.if_nil(opts.ignore_patterns, config.ignore_patterns),
     show_scores = vim.F.if_nil(opts.show_scores, config.show_scores),
     match_algorithm = opts.match_algorithm or config.match_algorithm,
+    result_limit = vim.F.if_nil(opts.result_limit, config.result_limit),
   }, context)
   opts.get_status_text = finder.get_status_text
 
