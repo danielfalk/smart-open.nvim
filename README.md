@@ -20,7 +20,7 @@ The goal of smart-open is to give you highly relevant results with as few keystr
 
 The source of suggestions is a combination of files under the current working directory, and your history.  Ranking takes the following factors into account:
 
-- How well the file path matches the search text 
+- How well the file path matches the search text
 - How well the file *name* matches the search text (see notes for file name details)
 - Recency of last open
 - Whether the file is the last-edited (that is, alternate buffer)
@@ -217,8 +217,4 @@ As a result, files added to git, _but also ignored by git_, will not be included
 
 ### Highlight Groups
 
-```vim
-Directory
-```
-
-
+`SmartOpenDirectory` (links to `Directory`)

@@ -12,6 +12,10 @@ end
 
 local db_by_path = {}
 
+local function setup_hlgroup()
+  vim.api.nvim_set_hl(0, "SmartOpenDirectory", { link = "Directory" })
+end
+
 return {
   config = config,
   setup = function(ext_config)
@@ -29,5 +33,6 @@ return {
     db_by_path[config.db_filename] = db_by_path[config.db_filename] or DbClient:new({ path = config.db_filename })
 
     history:setup(db_by_path[config.db_filename], config)
+    setup_hlgroup()
   end,
 }
