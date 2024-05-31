@@ -201,11 +201,8 @@ See [default configuration](https://github.com/nvim-telescope/telescope.nvim#tel
 telescope.setup {
   extensions = {
     smart_open = {
-      show_scores = false,
-      ignore_patterns = {"*.git/*", "*/tmp/*"},
-      match_algorithm = "fzy",
+      match_algorithm = "fzf",
       disable_devicons = false,
-      open_buffer_indicators = {previous = "👀", others = "🙈"},
     },
   },
 }
