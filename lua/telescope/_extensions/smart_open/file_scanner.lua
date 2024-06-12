@@ -80,7 +80,7 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
       end
 
       for line in splitlines(chunk) do
-        if on_insert(basedir .. "/" .. line) == false then
+        if #line > 0 and on_insert(basedir .. "/" .. line) == false then
           done = true
           stop()
           return vim.schedule(function()
