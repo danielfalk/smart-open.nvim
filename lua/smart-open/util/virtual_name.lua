@@ -17,6 +17,12 @@ local M = {}
 function M.get_pos(path)
   local last, penultimate, current
   local k = 0
+
+  -- enforce consistent path separator on windows to account for both forward and backward slashes
+  if vim.fn.has("win32") == 1 then
+    path = path:gsub("/", "\\")
+  end
+
   repeat
     penultimate = last
     last = current
