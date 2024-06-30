@@ -213,8 +213,6 @@ As a result, files added to git, _but also ignored by git_, will not be included
 
 ### Highlight Groups
 
-```vim
-Directory
-```
-
-
+| Highlight Group    | Links to  |
+| ------------------ | --------- |
+| SmartOpenDirectory | Directory |
