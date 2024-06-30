@@ -10,6 +10,8 @@ local function set_config(opt_name, value)
   end
 end
 
+vim.cmd("highlight default link SmartOpenDirectory Directory")
+
 return {
   config = config,
   setup = function(ext_config)
