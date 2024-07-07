@@ -31,6 +31,7 @@ function DbClient:new(o)
     end
   end
   self.db:eval([[ PRAGMA synchronous = NORMAL ]])
+  self.db:eval([[ PRAGMA journal_mode = WAL ]])
   return o
 end
 
