@@ -69,4 +69,8 @@ return {
     previous = "•",
     others = "∘",
   },
+  no_ignore = false,
+  no_ignore_parent = false,
+  follow = false,
+  hidden = false,
 }

@@ -45,7 +45,7 @@ return function(history, opts, context)
 
   local h = { frecency = 0, recent_rank = 0 }
 
-  file_scanner(opts.cwd, opts.ignore_patterns, function(fullpath)
+  file_scanner(opts, function(fullpath)
     if not is_added[fullpath] then
       local entry_data = create_entry_data(fullpath, h, context)
       match_runner.add_entry(entry_data)

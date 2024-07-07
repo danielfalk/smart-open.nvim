@@ -204,6 +204,21 @@ See [default configuration](https://github.com/nvim-telescope/telescope.nvim#tel
 - `result_limit` (default: `40`)
 
   Limit the number of results returned.  Note that this is kept intentionally low by default for performance.  The main goal of this plugin is to be able to jump to the file you want with very few keystrokes.  Smart open should put relevant results at your fingertips without having to waste time typing too much or scanning through a long list of results.  If you need to scan regardless, go ahead and increase this limit.  However, if better search results would make that unnecessary and there's a chance that smart open could provide them, please [file a bug](https://github.com/danielfalk/smart-open.nvim/issues/new) to help make it better.
+- `follow` (default: `false`)
+
+    If true, follows symlinks (i.e. uses `-L` flag for the `rg` command)
+
+- `hidden` (default: `false`)
+
+    Determines whether to show hidden files or not
+
+- `no_ignore` (default: `false`)
+
+    Show files ignored by .gitignore, .ignore, etc.
+
+- `no_ignore_parent` (default: `false`)
+
+    Show files ignored by .gitignore, .ignore, etc. in parent dirs.
 
 ### Example Configuration:
 
@@ -218,12 +233,6 @@ telescope.setup {
 }
 
 ```
-
-### Known Limitations
-
-For files not already in your history, smart-open uses ripgrep for scanning the current directory.  (The command is roughly: `rg --files --glob-case-insensitive --hidden --ignore-file=<cwd>/.ff-ignore -g <ignore_patterns...>`).
-
-As a result, files added to git, _but also ignored by git_, will not be included.  While not common, this is something that git allows. If this becomes a problem you can work around it by either changing your git ignore patterns, editing the file in neovim in some other way, (thereby adding it to the history), or by using ripgrep's `.ignore` file for overriding git.
 
 ### Highlight Groups
 

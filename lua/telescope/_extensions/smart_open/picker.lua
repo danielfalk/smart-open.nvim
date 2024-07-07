@@ -38,6 +38,10 @@ function M.start(opts)
     show_scores = vim.F.if_nil(opts.show_scores, config.show_scores),
     match_algorithm = opts.match_algorithm or config.match_algorithm,
     result_limit = vim.F.if_nil(opts.result_limit, config.result_limit),
+    no_ignore = vim.F.if_nil(opts.no_ignore, config.no_ignore),
+    no_ignore_parent = vim.F.if_nil(opts.no_ignore_parent, config.no_ignore_parent),
+    follow = vim.F.if_nil(opts.follow, config.follow),
+    hidden = vim.F.if_nil(opts.hidden, config.hidden),
   }, context)
   opts.get_status_text = finder.get_status_text
 
