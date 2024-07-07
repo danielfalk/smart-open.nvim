@@ -30,7 +30,7 @@ function DbClient:new(o)
       self:initialize_db()
     end
   end
-
+  self.db:eval([[ PRAGMA synchronous = NORMAL ]])
   return o
 end
 
