@@ -49,27 +49,44 @@ local function spawn(cmd, opts, input, onexit)
   return stop
 end
 
-local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
+local function ripgrep_scan(opts, on_insert, on_complete)
   local stderr = ""
   local args = {
     "--files",
     "--glob-case-insensitive",
     "--line-buffered",
-    "--hidden",
+    "--color",
+    "never",
     "--ignore-file",
-    basedir .. "/.ff-ignore",
+    opts.cwd .. "/.ff-ignore",
   }
 
-  for _, value in ipairs(ignore_patterns) do
+  for _, value in ipairs(opts.ignore_patterns) do
     table.insert(args, "-g")
     table.insert(args, "!" .. value)
+  end
+
+  if opts.hidden then
+    args[#args + 1] = "--hidden"
+  end
+
+  if opts.no_ignore then
+    args[#args + 1] = "--no-ignore"
+  end
+
+  if opts.no_ignore_parent then
+    args[#args + 1] = "--no-ignore-parent"
+  end
+
+  if opts.follow then
+    args[#args + 1] = "-L"
   end
 
   local done = false
   local stop
 
   local start_time
-  stop = spawn("rg", { args = args, cwd = basedir }, {
+  stop = spawn("rg", { args = args, cwd = opts.cwd }, {
     stdout = function(_, chunk)
       if not start_time then
         start_time = vim.loop.uptime()
@@ -80,7 +97,7 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
       end
 
       for line in splitlines(chunk) do
-        if #line > 0 and on_insert(basedir .. "/" .. line) == false then
+        if #line > 0 and on_insert(opts.cwd .. "/" .. line) == false then
           done = true
           stop()
           return vim.schedule(function()
@@ -99,8 +116,8 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
   end)
 end
 
-return function(cwd, ignore_patterns, on_insert, on_complete)
-  ripgrep_scan(cwd, ignore_patterns, on_insert, function(exit_code, err)
+return function(opts, on_insert, on_complete)
+  ripgrep_scan(opts, on_insert, function(exit_code, err)
     if exit_code ~= 0 then
       print("ripgrep exited with code", exit_code, "and error:", err)
     end
