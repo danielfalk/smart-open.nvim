@@ -134,6 +134,14 @@ programs.neovim.plugins = [
 ];
 ```
 
+#### Nix (without home-manager)
+
+```nix
+environment.variables = {
+    LIBSQLITE = "${pkgs.sqlite.out}/lib/libsqlite3.so";
+};
+```
+
 If no database is found when running Neovim with the plugin installed, a new one is created and entries from `shada` `v:oldfiles` are automatically imported.
 
 ## Usage
