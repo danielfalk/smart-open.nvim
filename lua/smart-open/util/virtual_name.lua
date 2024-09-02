@@ -9,6 +9,7 @@ local is_index_filename = {
   ["index.test.tsx"] = true,
   ["__init__.py"] = true,
   ["init.lua"] = true,
+  ["default.nix"] = true,
 }
 
 local M = {}
