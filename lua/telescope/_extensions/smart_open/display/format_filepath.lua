@@ -81,7 +81,7 @@ local function format_filepath(path, filename, opts, maxlen)
       result = filename .. spacing .. fit_dir(path, remaining, { shorten_to = 8 })
     end
     local start_index = len(filename .. spacing)
-    hl_group = { { start_index, start_index + len(result) }, "Directory" }
+    hl_group = { { start_index, start_index + len(result) }, opts.filename_first and "TelescopeResultsComment" or "Directory" }
 
     return result, hl_group
   else
@@ -96,7 +96,7 @@ local function format_filepath(path, filename, opts, maxlen)
         -- There's just enough space for the filename
         return filename, hl_group
       elseif remaining == 2 then
-        return "…/" .. filename, { { 1, 2 }, "Directory" }
+        return "…/" .. filename, { { 1, 2 }, opts.filename_first and "TelescopeResultsComment" or "Directory" }
       end
 
       path = fit_dir(path, remaining, { shorten_to = 0 })
