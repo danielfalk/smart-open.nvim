@@ -13,7 +13,14 @@ end
 local db_by_path = {}
 
 local function setup_hlgroup()
-  vim.api.nvim_set_hl(0, "SmartOpenDirectory", { link = "Directory" })
+  local group = vim.api.nvim_create_augroup("SmartOpenHighlight", { clear = true })
+
+  vim.api.nvim_create_autocmd({ "ColorScheme" }, {
+    callback = function()
+      vim.api.nvim_set_hl(0, "SmartOpenDirectory", { link = "Directory" })
+    end,
+    group = group,
+  })
 end
 
 return {
