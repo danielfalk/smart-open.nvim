@@ -17,7 +17,7 @@ local function setup_hlgroup()
 
   vim.api.nvim_create_autocmd({ "ColorScheme" }, {
     callback = function()
-      vim.api.nvim_set_hl(0, "SmartOpenDirectory", { link = "Directory" })
+      vim.api.nvim_set_hl(0, "SmartOpenDirectory", { link = "TelescopeResultsComment" })
     end,
     group = group,
   })
