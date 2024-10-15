@@ -35,7 +35,6 @@ return {
     if options.native_fzy_path then
       fzy = loadfile(options.native_fzy_path)()
     else
-      print("Unable to find native fzy native lua dep file. Probably need to update submodules!")
       fzy = require("smart-open.matching.algorithms.fzy_implementation")
     end
   end,
