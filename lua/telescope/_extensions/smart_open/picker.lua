@@ -79,10 +79,11 @@ function M.start(opts)
         end
       end
 
-      local key_bind_internal = vim.api.nvim_replace_termcodes("<C-w>", true, true, true)
+      local default_close_buffer_keybind = "<C-D>"
+      local key_bind_internal = vim.api.nvim_replace_termcodes(default_close_buffer_keybind, true, true, true)
 
       if not applied_mappings.i[key_bind_internal] then
-        map("i", "<C-w>", smart_open_actions.delete_buffer)
+        map("i", default_close_buffer_keybind, smart_open_actions.delete_buffer)
       end
 
       return true
