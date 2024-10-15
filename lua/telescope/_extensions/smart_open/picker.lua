@@ -74,12 +74,14 @@ function M.start(opts)
 
             applied_mappings[mode][key_bind_internal] = true
 
-            map(mode, key_bind_internal, key_func)
+            map(mode, key_bind, key_func)
           end
         end
       end
 
-      if not applied_mappings.i["<C-w>"] then
+      local key_bind_internal = vim.api.nvim_replace_termcodes("<C-w>", true, true, true)
+
+      if not applied_mappings.i[key_bind_internal] then
         map("i", "<C-w>", smart_open_actions.delete_buffer)
       end
 
