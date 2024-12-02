@@ -38,6 +38,7 @@ function M.start(opts)
     show_scores = vim.F.if_nil(opts.show_scores, config.show_scores),
     match_algorithm = opts.match_algorithm or config.match_algorithm,
     result_limit = vim.F.if_nil(opts.result_limit, config.result_limit),
+    follow_symlinks = vim.F.if_nil(opts.follow_symlinks, config.follow_symlinks),
   }, context)
   opts.get_status_text = finder.get_status_text
 

@@ -49,7 +49,7 @@ local function spawn(cmd, opts, input, onexit)
   return stop
 end
 
-local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
+local function ripgrep_scan(basedir, ignore_patterns, follow_symlinks, on_insert, on_complete)
   local stderr = ""
   local args = {
     "--files",
@@ -59,6 +59,10 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
     "--ignore-file",
     basedir .. "/.ff-ignore",
   }
+
+  if follow_symlinks then
+    table.insert(args, "--follow")
+  end
 
   for _, value in ipairs(ignore_patterns) do
     table.insert(args, "-g")
@@ -99,8 +103,8 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
   end)
 end
 
-return function(cwd, ignore_patterns, on_insert, on_complete)
-  ripgrep_scan(cwd, ignore_patterns, on_insert, function(exit_code, err)
+return function(cwd, ignore_patterns, on_insert, on_complete, follow_symlinks)
+  ripgrep_scan(cwd, ignore_patterns, follow_symlinks, on_insert, function(exit_code, err)
     if exit_code ~= 0 then
       print("ripgrep exited with code", exit_code, "and error:", err)
     end

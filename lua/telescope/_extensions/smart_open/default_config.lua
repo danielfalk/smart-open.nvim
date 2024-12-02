@@ -69,4 +69,5 @@ return {
     previous = "•",
     others = "∘",
   },
+  follow_symlinks = false,
 }
