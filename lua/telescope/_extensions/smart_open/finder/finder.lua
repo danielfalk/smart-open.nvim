@@ -52,7 +52,7 @@ return function(history, opts, context)
     end
   end, function()
     match_runner.entries_complete()
-  end)
+  end, opts.follow_symlinks)
 
   return setmetatable({
     close = function() end,
