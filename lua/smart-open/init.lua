@@ -20,7 +20,7 @@ return {
     set_config("ignore_patterns", ext_config.ignore_patterns)
     set_config("match_algorithm", ext_config.match_algorithm)
     set_config("cwd_only", ext_config.cwd_only)
-    set_config("buffer_indicators", ext_config.buffer_indicators)
+    set_config("open_buffer_indicators", ext_config.open_buffer_indicators)
     set_config("mappings", ext_config.mappings)
     set_config("result_limit", ext_config.result_limit)
 
