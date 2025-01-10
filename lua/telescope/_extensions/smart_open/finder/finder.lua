@@ -32,6 +32,7 @@ return function(history, opts, context)
         frecency = v.score / max_score,
         recent_rank = v.recent_rank,
       }
+      v.path = vim.fs.normalize(v.path)
       local entry_data = create_entry_data(v.path, history_data, context)
       entry_data.virtual_name = virtual_name.get_virtual_name(v.path)
 

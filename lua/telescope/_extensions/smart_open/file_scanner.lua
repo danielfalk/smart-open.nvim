@@ -57,6 +57,7 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
     "--line-buffered",
     "--hidden",
     "--ignore-file",
+    "--path-separator=/",
     basedir .. "/.ff-ignore",
   }
 
@@ -100,6 +101,7 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
 end
 
 return function(cwd, ignore_patterns, on_insert, on_complete)
+  cwd = vim.fs.normalize(cwd)
   ripgrep_scan(cwd, ignore_patterns, on_insert, function(exit_code, err)
     if exit_code ~= 0 then
       print("ripgrep exited with code", exit_code, "and error:", err)
