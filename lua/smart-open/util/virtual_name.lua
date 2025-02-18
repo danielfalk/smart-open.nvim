@@ -14,12 +14,14 @@ local is_index_filename = {
 
 local M = {}
 
+local win32 = vim.fn.has("win32") == 1
+
 function M.get_pos(path)
   local last, penultimate, current
   local k = 0
 
   -- enforce consistent path separator on windows to account for both forward and backward slashes
-  if vim.fn.has("win32") == 1 then
+  if win32 then
     path = path:gsub("/", "\\")
   end
 
