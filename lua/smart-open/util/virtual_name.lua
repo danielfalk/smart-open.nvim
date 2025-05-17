@@ -10,6 +10,7 @@ local is_index_filename = {
   ["__init__.py"] = true,
   ["init.lua"] = true,
   ["default.nix"] = true,
+  ["package.d"] = true,
 }
 
 local M = {}
