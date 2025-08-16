@@ -5,7 +5,8 @@ local function get_buffer_list()
     if vim.fn.buflisted(buf) == 1 and vim.api.nvim_buf_get_name(buf) ~= "" then
       result[vim.api.nvim_buf_get_name(buf)] = {
         bufnr = buf,
-        is_modified = vim.api.nvim_buf_get_option(buf, "modified")
+        is_modified = vim.api.nvim_buf_get_option(buf, "modified"),
+        lnum = vim.fn.getbufinfo(buf)[1].lnum,
       }
     end
   end
