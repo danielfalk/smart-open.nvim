@@ -90,7 +90,7 @@ function M.start(opts)
       return true
     end,
     finder = finder,
-    previewer = telescope_config.file_previewer(opts),
+    previewer = telescope_config.grep_previewer(opts),
     sorter = sorters.Sorter:new({
       -- Just reverse the relevance values for sorting
       scoring_function = function(_, _, x)

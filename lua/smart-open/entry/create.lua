@@ -65,6 +65,7 @@ local function create_entry_data(path, history, context)
     if loaded then
       if loaded.bufnr then
         entry.buf = loaded.bufnr
+        entry.lnum = loaded.lnum
         entry.modified = loaded.is_modified
       end
       scores.open = weights.open
