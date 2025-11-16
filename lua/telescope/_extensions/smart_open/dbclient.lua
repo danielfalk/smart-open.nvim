@@ -137,7 +137,7 @@ end
 function DbClient:validate()
   local files = self.db:select("files")
   for _, result in ipairs(files) do
-    if util.fs_stat(result.path).exists then
+    if not util.fs_stat(result.path).exists then
       self.db:delete("files", { where = { path = result.path } })
     end
   end

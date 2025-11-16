@@ -15,6 +15,7 @@ local is_index_filename = {
 local M = {}
 
 local win32 = vim.fn.has("win32") == 1
+local path_separator = package.config:sub(1, 1)
 
 function M.get_pos(path)
   local last, penultimate, current
@@ -22,7 +23,7 @@ function M.get_pos(path)
 
   -- enforce consistent path separator on windows to account for both forward and backward slashes
   if win32 then
-    path = path:gsub("/", "\\")
+    path = path:gsub("/", path_separator):gsub("\\", path_separator)
   end
 
   repeat
@@ -32,7 +33,18 @@ function M.get_pos(path)
     current, k = path:find(path_separator, k + 1, true)
   until current == nil
 
-  return is_index_filename[path:sub(last + 1, path:len())] and penultimate + 1 or last + 1
+  if not last then
+    -- no path separator found, so return the start of the string (a.k.a. use the whole string)
+    return 1
+  end
+
+  local filename = path:sub(last + 1)
+
+  if is_index_filename[filename] and penultimate then
+    return penultimate + 1
+  else
+    return last + 1
+  end
 end
 
 function M.get_virtual_name(path)
