@@ -35,6 +35,7 @@ function M.start(opts)
     cwd = opts.cwd,
     cwd_only = vim.F.if_nil(opts.cwd_only, config.cwd_only),
     ignore_patterns = vim.F.if_nil(opts.ignore_patterns, config.ignore_patterns),
+    extra_rg_args = vim.F.if_nil(opts.extra_rg_args, config.extra_rg_args),
     show_scores = vim.F.if_nil(opts.show_scores, config.show_scores),
     match_algorithm = opts.match_algorithm or config.match_algorithm,
     result_limit = vim.F.if_nil(opts.result_limit, config.result_limit),

@@ -49,7 +49,7 @@ local function spawn(cmd, opts, input, onexit)
   return stop
 end
 
-local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
+local function ripgrep_scan(basedir, ignore_patterns, extra_rg_args, on_insert, on_complete)
   local stderr = ""
   local args = {
     "--files",
@@ -63,6 +63,13 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
   for _, value in ipairs(ignore_patterns) do
     table.insert(args, "-g")
     table.insert(args, "!" .. value)
+  end
+
+  -- Add extra ripgrep arguments
+  if extra_rg_args then
+    for _, value in ipairs(extra_rg_args) do
+      table.insert(args, value)
+    end
   end
 
   local done = false
@@ -99,8 +106,8 @@ local function ripgrep_scan(basedir, ignore_patterns, on_insert, on_complete)
   end)
 end
 
-return function(cwd, ignore_patterns, on_insert, on_complete)
-  ripgrep_scan(cwd, ignore_patterns, on_insert, function(exit_code, err)
+return function(cwd, ignore_patterns, extra_rg_args, on_insert, on_complete)
+  ripgrep_scan(cwd, ignore_patterns, extra_rg_args, on_insert, function(exit_code, err)
     if exit_code ~= 0 then
       print("ripgrep exited with code", exit_code, "and error:", err)
     end

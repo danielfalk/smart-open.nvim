@@ -34,6 +34,7 @@ return {
     set_config("open_buffer_indicators", ext_config.open_buffer_indicators or ext_config.buffer_indicators)
     set_config("mappings", ext_config.mappings)
     set_config("result_limit", ext_config.result_limit)
+    set_config("extra_rg_args", ext_config.extra_rg_args)
 
     config.db_filename = vim.fn.stdpath("data") .. "/smart_open.sqlite3"
 

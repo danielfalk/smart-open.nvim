@@ -69,4 +69,5 @@ return {
     previous = "•",
     others = "∘",
   },
+  extra_rg_args = {},
 }
